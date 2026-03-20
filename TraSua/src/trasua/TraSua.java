@@ -18,6 +18,8 @@ public class TraSua {
         System.out.println("Hello world");
         
         System.out.println("hello");
+        
+        System.out.println("hehe");
     }
     
 }
