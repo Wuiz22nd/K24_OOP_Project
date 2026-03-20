@@ -209,7 +209,7 @@ src/
 
 ## 🔗 Git Repository
 
-👉 (Thêm link repo tại đây)
+👉 https://github.com/Wuiz22nd/K24_OOP_Project.git
 
 ---
 
