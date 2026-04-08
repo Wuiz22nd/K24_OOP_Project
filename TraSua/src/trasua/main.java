@@ -8,7 +8,7 @@ package trasua;
  *
  * @author wuiz
  */
-public class TraSua {
+public class main {
 
     /**
      * @param args the command line arguments
