@@ -8,6 +8,20 @@ package model;
  *
  * @author wuiz
  */
-public class ToppingDecorator {
-    
+public abstract class ToppingDecorator extends Tea {
+    protected Tea wrappedTea;
+
+    public ToppingDecorator(Tea tea) {
+        super(tea.getDescription(), tea.cost());
+        this.wrappedTea = tea;
+    }
+
+    @Override
+    public abstract double cost();
+
+    @Override
+    public abstract String getDescription();
+
+    @Override
+    public abstract void deductInventory();
 }

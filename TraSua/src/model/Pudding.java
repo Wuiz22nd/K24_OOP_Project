@@ -8,6 +8,25 @@ package model;
  *
  * @author wuiz
  */
-public class Pudding {
-    
+public class Pudding extends ToppingDecorator {
+
+    public Pudding(Tea tea) {
+        super(tea);
+    }
+
+    @Override
+    public double cost() {
+        return wrappedTea.cost() + 7000;
+    }
+
+    @Override
+    public String getDescription() {
+        return wrappedTea.getDescription() + ", Pudding";
+    }
+
+    @Override
+    public void deductInventory() {
+        wrappedTea.deductInventory();
+        Inventory.getInstance().checkAndDeduct("pudding", 1);
+    }
 }

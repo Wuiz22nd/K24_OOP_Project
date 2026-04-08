@@ -8,6 +8,20 @@ package model;
  *
  * @author wuiz
  */
-public class Tea {
-    
+public abstract class Tea {
+    protected String name;
+    protected double basePrice;
+
+    public Tea(String name, double basePrice) {
+        this.name = name;
+        this.basePrice = basePrice;
+    }
+
+    public abstract double cost();
+
+    public String getDescription() {
+        return name;
+    }
+
+    public abstract void deductInventory();
 }

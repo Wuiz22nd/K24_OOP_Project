@@ -8,6 +8,20 @@ package model;
  *
  * @author wuiz
  */
-public class MilkTea {
-    
+public class MilkTea extends Tea {
+
+    public MilkTea(String name, double basePrice) {
+        super(name, basePrice);
+    }
+
+    @Override
+    public double cost() {
+        return basePrice;
+    }
+
+    @Override
+    public void deductInventory() {
+        Inventory.getInstance().checkAndDeduct("tea", 1);
+        Inventory.getInstance().checkAndDeduct("milk", 1);
+    }
 }
