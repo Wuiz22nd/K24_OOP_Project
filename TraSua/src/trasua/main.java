@@ -4,11 +4,11 @@
  */
 package trasua;
 
-import model.MilkTea;
-import model.Order;
-import model.Pearl;
-import model.Pudding;
-import model.Tea;
+import service.AuthService;
+import service.OrderService;
+import view.AuthView;
+import view.MainView;
+import java.util.Scanner;
 
 /**
  *
@@ -20,27 +20,36 @@ public class main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        Tea tea1 = new MilkTea("Milk Tea", 20000);
-        tea1 = new Pearl(tea1);
-        tea1 = new Pudding(tea1);
+        Scanner scanner = new Scanner(System.in);
+        
+        AuthService authService = new AuthService();
+        OrderService orderService = new OrderService();
+        
+        AuthView authView = new AuthView(authService, scanner);
+        MainView mainView = new MainView(orderService, scanner);
 
-        Tea tea2 = new MilkTea("Black Milk Tea", 25000);
-        tea2 = new Pearl(tea2);
+        System.out.println("=========================================");
+        System.out.println("   BUBBLE TEA MANAGEMENT SYSTEM");
+        System.out.println("          Chao mung ban! ");
+        System.out.println("=========================================");
 
-        Order order = new Order();
-        order.addDrink(tea1);
-        order.addDrink(tea2);
+        while (true) {
+            boolean loggedIn = authView.start();
+            
+            if (!loggedIn) {
+                System.out.println("Cam on ban da su dung chuong trinh. Hen gap lai!");
+                break;
+            }
 
-        // Trừ kho
-        tea1.deductInventory();
-        tea2.deductInventory();
+            String username = authService.getCurrentUser().getUsername();
+            System.out.println("\nXin chao " + username + "!");
 
-        // In hóa đơn
-        order.printInvoice();
+            mainView.start();
 
-        // Lưu kho
-        Inventory.getInstance().saveToFile();
+            authService.logout();
+            System.out.println("Da dang xuat.");
+        }
+
+        scanner.close();
     }
-    
 }

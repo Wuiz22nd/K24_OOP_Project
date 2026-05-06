@@ -6,21 +6,21 @@ package model;
 
 /**
  *
- * @author wuiz
+ * @author Minhphat
  */
-public class MilkTea extends Tea {
+public class ChocolateTea extends Tea {
 
-    public MilkTea() {
-        super("Tra sua truyen thong", 30000);
+    public ChocolateTea() {
+        super("Tra sua socola", 32000);
     }
 
-    @Override
+        @Override
     public String[] getIngredientNames() {
         return new String[]{"tra", "sua", "duong", "da"};
     }
 
     @Override
     public int[] getIngredientQuantities() {
-        return new int[]{200, 150, 50, 100};
+        return new int[]{200, 160, 70, 100};
     }
 }

@@ -8,28 +8,38 @@ package model;
  *
  * @author wuiz
  */
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Order {
-    private List<Tea> items = new ArrayList<>();
+    private List<Tea> drinks = new ArrayList<>();
 
-    public void addDrink(Tea tea) {
-        items.add(tea);
+    public void addDrink(Tea drink) {
+        drinks.add(drink);
     }
 
     public double calculateTotal() {
         double total = 0;
-        for (Tea t : items) {
-            total += t.cost();
+        for (Tea drink : drinks) {
+            total += drink.getCost();
         }
         return total;
     }
 
+    public List<Tea> getDrinks() {
+        return new ArrayList<>(drinks);
+    }
+
+    public void clear() {
+        drinks.clear();
+    }
+
     public void printInvoice() {
-        System.out.println("===== HOA DON =====");
-        for (Tea t : items) {
-            System.out.println(t.getDescription() + " - " + t.cost());
+        System.out.println("\n=== HOA DON BUBBLE TEA ===");
+        for (Tea drink : drinks) {
+            System.out.printf("%-40s : %, .0f VND%n", drink.getDescription(), drink.getCost());
         }
-        System.out.println("Tong: " + calculateTotal());
+        System.out.printf("TONG CONG: %, .0f VND%n", calculateTotal());
+        System.out.println("============================");
     }
 }

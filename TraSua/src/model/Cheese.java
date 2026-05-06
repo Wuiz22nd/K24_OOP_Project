@@ -6,21 +6,21 @@ package model;
 
 /**
  *
- * @author wuiz
+ * @author Minhphat
  */
-public class Pudding extends ToppingDecorator {
+public class Cheese extends ToppingDecorator {
 
-    public Pudding(Tea tea) {
-        super(tea, "Thach", 12000);
+    public Cheese(Tea tea) {
+        super(tea, "Kem cheese", 15000);
     }
 
     @Override
     protected String[] getOwnIngredientNames() {
-        return new String[]{"thach"};
+        return new String[]{"kem_cheese"};
     }
 
     @Override
     protected int[] getOwnIngredientQuantities() {
-        return new int[]{40};
+        return new int[]{30};
     }
 }

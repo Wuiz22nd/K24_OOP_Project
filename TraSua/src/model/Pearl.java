@@ -11,22 +11,16 @@ package model;
 public class Pearl extends ToppingDecorator {
 
     public Pearl(Tea tea) {
-        super(tea);
+        super(tea, "Tran chau", 10000);
     }
 
     @Override
-    public double cost() {
-        return wrappedTea.cost() + 5000;
+    protected String[] getOwnIngredientNames() {
+        return new String[]{"tran_chau"};
     }
 
     @Override
-    public String getDescription() {
-        return wrappedTea.getDescription() + ", Pearl";
-    }
-
-    @Override
-    public void deductInventory() {
-        wrappedTea.deductInventory();
-        Inventory.getInstance().checkAndDeduct("pearl", 1);
+    protected int[] getOwnIngredientQuantities() {
+        return new int[]{50};
     }
 }

@@ -6,12 +6,12 @@ package model;
 
 /**
  *
- * @author wuiz
+ * @author Minhphat
  */
-public class MilkTea extends Tea {
+public class MatchaTea extends Tea {
 
-    public MilkTea() {
-        super("Tra sua truyen thong", 30000);
+    public MatchaTea() {
+        super("Tra sua matcha", 35000);
     }
 
     @Override
@@ -21,6 +21,6 @@ public class MilkTea extends Tea {
 
     @Override
     public int[] getIngredientQuantities() {
-        return new int[]{200, 150, 50, 100};
+        return new int[]{200, 180, 60, 100};
     }
 }

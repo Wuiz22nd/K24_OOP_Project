@@ -1,0 +1,7 @@
+tra=10000
+sua=8000
+duong=5000
+da=20000
+tran_chau=5000
+kem_cheese=3000
+thach=4000
