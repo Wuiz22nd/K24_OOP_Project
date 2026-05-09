@@ -6,9 +6,8 @@ package trasua;
 
 import service.AuthService;
 import service.OrderService;
-import view.AuthView;
-import view.MainView;
-import java.util.Scanner;
+import view.LoginFrame;
+import javax.swing.*;
 
 /**
  *
@@ -20,36 +19,22 @@ public class main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        
-        AuthService authService = new AuthService();
-        OrderService orderService = new OrderService();
-        
-        AuthView authView = new AuthView(authService, scanner);
-        MainView mainView = new MainView(orderService, scanner);
-
-        System.out.println("=========================================");
-        System.out.println("   BUBBLE TEA MANAGEMENT SYSTEM");
-        System.out.println("          Chao mung ban! ");
-        System.out.println("=========================================");
-
-        while (true) {
-            boolean loggedIn = authView.start();
-            
-            if (!loggedIn) {
-                System.out.println("Cam on ban da su dung chuong trinh. Hen gap lai!");
-                break;
+        // Chạy giao diện GUI theo kiểu Swing
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Set Look and Feel đẹp hơn
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                
+                AuthService authService = new AuthService();
+                LoginFrame loginFrame = new LoginFrame(authService);
+                loginFrame.setVisible(true);
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, 
+                    "Lỗi khởi động chương trình: " + e.getMessage(), 
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-
-            String username = authService.getCurrentUser().getUsername();
-            System.out.println("\nXin chao " + username + "!");
-
-            mainView.start();
-
-            authService.logout();
-            System.out.println("Da dang xuat.");
-        }
-
-        scanner.close();
+        });
     }
 }

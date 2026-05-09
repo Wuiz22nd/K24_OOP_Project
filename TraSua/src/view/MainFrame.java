@@ -17,6 +17,7 @@ public class MainFrame extends JFrame {
 
     private final AuthService authService;
     private final OrderService orderService;
+    private DrinkOrderPanel drinkOrderPanel;
 
     public MainFrame(AuthService authService, OrderService orderService) {
         this.authService = authService;
@@ -49,11 +50,28 @@ public class MainFrame extends JFrame {
         JButton btnLogout = new JButton("Đăng xuất");
         btnLogout.setBackground(Color.WHITE);
         btnLogout.setForeground(Color.BLACK);
+        btnLogout.addActionListener(e -> logout());
 
         topBar.add(title, BorderLayout.WEST);
         topBar.add(userLabel, BorderLayout.CENTER);
         topBar.add(btnLogout, BorderLayout.EAST);
 
-        
+        // Drink Order Panel
+        drinkOrderPanel = new DrinkOrderPanel(orderService);
+
+        mainPanel.add(topBar, BorderLayout.NORTH);
+        mainPanel.add(drinkOrderPanel, BorderLayout.CENTER);
+
+        add(mainPanel);
+    }
+
+    private void logout() {
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Bạn có chắc muốn đăng xuất?", "Đăng xuất", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            dispose();
+            new LoginFrame(authService).setVisible(true);
+        }
     }
 }
