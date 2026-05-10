@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package view;
 
-/**
- *
- * @author Minhphat
- */
 import model.*;
 import service.OrderService;
 import service.InsufficientStockException;
@@ -22,6 +14,7 @@ public class DrinkOrderPanel extends JPanel {
     private JTable orderTable;
     private DefaultTableModel tableModel;
     private JLabel totalLabel;
+    private JPanel contentPanel;
 
     public DrinkOrderPanel(OrderService orderService) {
         this.orderService = orderService;
@@ -32,12 +25,16 @@ public class DrinkOrderPanel extends JPanel {
         setLayout(new BorderLayout(8, 8));
         setBackground(new Color(0, 140, 130));
 
+        // Top Bar
         add(createTopBar(), BorderLayout.NORTH);
 
+        // Center Area
         JPanel center = new JPanel(new BorderLayout(8, 8));
         center.setBackground(new Color(240, 240, 240));
-        center.add(createMenuPanel(), BorderLayout.CENTER);
-        center.add(createOrderTablePanel(), BorderLayout.SOUTH);
+
+        center.add(createSidebar(), BorderLayout.WEST);
+        center.add(createContentPanel(), BorderLayout.CENTER);
+        center.add(createOrderTablePanel(), BorderLayout.SOUTH);   // ← Sửa ở đây
 
         add(center, BorderLayout.CENTER);
         add(createRightPanel(), BorderLayout.EAST);
@@ -51,87 +48,49 @@ public class DrinkOrderPanel extends JPanel {
         JLabel title = new JLabel("   BUBBLE TEA POS - QUẢN LÝ BÁN HÀNG", SwingConstants.LEFT);
         title.setFont(new Font("Segoe UI", Font.BOLD, 20));
         title.setForeground(Color.WHITE);
-
         panel.add(title, BorderLayout.CENTER);
         return panel;
     }
 
-    private JPanel createMenuPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-
-        // Sidebar
+    private JPanel createSidebar() {
         JPanel sidebar = new JPanel(new GridLayout(4, 1, 5, 5));
         sidebar.setPreferredSize(new Dimension(170, 0));
         sidebar.setBackground(new Color(245, 245, 245));
 
-        String[] cat = {"Danh sách món", "Lượng đường", "Lượng đá", "Topping"};
-        Color[] col = {new Color(220, 80, 80), new Color(255, 140, 0), 
-                      new Color(50, 205, 50), new Color(30, 144, 255)};
+        String[] categories = {"Danh sách món", "Lượng đường", "Lượng đá", "Topping"};
+        Color[] colors = {new Color(220, 80, 80), new Color(255, 140, 0), 
+                         new Color(50, 205, 50), new Color(30, 144, 255)};
 
-        for (int i = 0; i < cat.length; i++) {
-            JButton b = new JButton(cat[i]);
-            b.setBackground(col[i]);
-            b.setForeground(Color.BLACK);
-            b.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            sidebar.add(b);
+        for (int i = 0; i < categories.length; i++) {
+            JButton btn = new JButton(categories[i]);
+            btn.setBackground(colors[i]);
+            btn.setForeground(Color.WHITE);
+            btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+            final int index = i;
+            btn.addActionListener(e -> switchCategory(index));
+            sidebar.add(btn);
         }
-
-        // Menu Grid
-        JPanel grid = new JPanel(new GridLayout(0, 3, 10, 10));
-        grid.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        grid.setBackground(Color.WHITE);
-
-        addDrinkButton(grid, "Trà Sữa Truyền Thống", new MilkTea());
-        addDrinkButton(grid, "Trà Sữa Socola", new ChocolateTea());
-        addDrinkButton(grid, "Trà Sữa Matcha", new MatchaTea());
-        addDrinkButton(grid, "Trà Sữa Đường Đen", null);
-        addDrinkButton(grid, "Trà Sữa Oolong", null);
-
-        panel.add(sidebar, BorderLayout.WEST);
-        panel.add(grid, BorderLayout.CENTER);
-        return panel;
+        return sidebar;
     }
 
-    private void addDrinkButton(JPanel panel, String name, Tea baseTea) {
-        JButton btn = new JButton("<html><center>" + name + "</center></html>");
-        btn.setBackground(new Color(0, 128, 128));
-        btn.setForeground(Color.BLACK);
-        btn.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        btn.setFocusPainted(false);
-
-        btn.addActionListener(e -> {
-            if (baseTea != null) {
-                DrinkCustomizerDialog dialog = new DrinkCustomizerDialog(
-                    (Frame) SwingUtilities.getWindowAncestor(this), baseTea);
-                dialog.setVisible(true);
-
-                if (dialog.isConfirmed()) {
-                    try {
-                        orderService.processOrder(dialog.getResultTea());
-                        refreshOrderTable();
-                        JOptionPane.showMessageDialog(this, "Đã thêm vào hóa đơn!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (InsufficientStockException ex) {
-                        JOptionPane.showMessageDialog(this, ex.getMessage(), "Hết Nguyên Liệu", JOptionPane.ERROR_MESSAGE);
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            }
-        });
-
-        panel.add(btn);
+    private JPanel createContentPanel() {
+        contentPanel = new JPanel(new BorderLayout());
+        contentPanel.setBackground(Color.WHITE);
+        showDrinkList();
+        return contentPanel;
     }
 
     private JPanel createOrderTablePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setPreferredSize(new Dimension(0, 260));
+        panel.setPreferredSize(new Dimension(0, 280));
         panel.setBackground(new Color(0, 110, 100));
 
         String[] columns = {"STT", "Tên món", "Giá", "Số lượng", "Thành tiền"};
         tableModel = new DefaultTableModel(columns, 0);
         orderTable = new JTable(tableModel);
-        orderTable.setRowHeight(30);
+        orderTable.setRowHeight(32);
         orderTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        orderTable.setForeground(Color.BLACK);
         orderTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
 
         JScrollPane scroll = new JScrollPane(orderTable);
@@ -142,7 +101,6 @@ public class DrinkOrderPanel extends JPanel {
 
         panel.add(scroll, BorderLayout.CENTER);
         panel.add(totalLabel, BorderLayout.SOUTH);
-
         return panel;
     }
 
@@ -173,24 +131,91 @@ public class DrinkOrderPanel extends JPanel {
 
     private void styleRightButton(JButton btn, Color color) {
         btn.setBackground(color);
-        btn.setForeground(Color.BLACK);
+        btn.setForeground(Color.WHITE);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btn.setFocusPainted(false);
     }
 
+    private void switchCategory(int index) {
+        contentPanel.removeAll();
+        switch (index) {
+            case 0 -> showDrinkList();
+            case 1 -> showSugarLevelPanel();
+            case 2 -> showIceLevelPanel();
+            case 3 -> showToppingPanel();
+        }
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    private void showDrinkList() {
+        JPanel grid = new JPanel(new GridLayout(0, 3, 12, 12));
+        grid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        grid.setBackground(Color.WHITE);
+
+        addDrinkButton(grid, "Trà Sữa Truyền Thống", new MilkTea());
+        addDrinkButton(grid, "Trà Sữa Socola", new ChocolateTea());
+        addDrinkButton(grid, "Trà Sữa Matcha", new MatchaTea());
+
+        contentPanel.add(grid, BorderLayout.CENTER);
+    }
+
+    private void showSugarLevelPanel() {
+        SugarLevelDialog dialog = new SugarLevelDialog((Frame) SwingUtilities.getWindowAncestor(this));
+        dialog.setVisible(true);
+    }
+
+    private void showIceLevelPanel() {
+        IceLevelDialog dialog = new IceLevelDialog((Frame) SwingUtilities.getWindowAncestor(this));
+        dialog.setVisible(true);
+    }
+
+    private void showToppingPanel() {
+        ToppingDialog dialog = new ToppingDialog(
+            (Frame) SwingUtilities.getWindowAncestor(this), 
+            null); // hoặc truyền currentTea nếu có
+        
+        dialog.setVisible(true);
+        
+        if (dialog.isConfirmed()) {
+            JOptionPane.showMessageDialog(this, 
+                "Đã chọn Topping thành công!", 
+                "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    private void addDrinkButton(JPanel panel, String name, Tea baseTea) {
+        JButton btn = new JButton("<html><center>" + name + "</center></html>");
+        btn.setBackground(new Color(0, 128, 128));
+        btn.setForeground(Color.WHITE);
+        btn.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btn.setFocusPainted(false);
+
+        btn.addActionListener(e -> {
+            if (baseTea != null) {
+                DrinkCustomizerDialog dialog = new DrinkCustomizerDialog(
+                    (Frame) SwingUtilities.getWindowAncestor(this), baseTea);
+                dialog.setVisible(true);
+            }
+        });
+        panel.add(btn);
+    }
+
     public void refreshOrderTable() {
+        if (tableModel == null) return;
+        
         tableModel.setRowCount(0);
         Order order = orderService.getCurrentOrder();
         List<Tea> drinks = order.getDrinks();
         int stt = 1;
 
         for (Tea drink : drinks) {
+            double price = drink.getCost();
             Object[] row = {
                 stt++,
                 drink.getDescription(),
-                String.format("%,.0f", drink.getCost()),
+                String.format("%,.0f", price),
                 "1",
-                String.format("%,.0f", drink.getCost())
+                String.format("%,.0f", price)
             };
             tableModel.addRow(row);
         }
@@ -207,6 +232,21 @@ public class DrinkOrderPanel extends JPanel {
     }
 
     private void checkout() {
-        JOptionPane.showMessageDialog(this, "Chức năng thanh toán đang được phát triển!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        Order currentOrder = orderService.getCurrentOrder();
+        if (currentOrder.getDrinks().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Hóa đơn trống!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        PaymentDialog paymentDialog = new PaymentDialog(
+            (Frame) SwingUtilities.getWindowAncestor(this), 
+            currentOrder, 
+            orderService);
+        
+        paymentDialog.setVisible(true);
+
+        if (paymentDialog.isPaid()) {
+            refreshOrderTable();
+        }
     }
 }

@@ -60,7 +60,7 @@ public class MainFrame extends JFrame {
         drinkOrderPanel = new DrinkOrderPanel(orderService);
 
         mainPanel.add(topBar, BorderLayout.NORTH);
-        mainPanel.add(drinkOrderPanel, BorderLayout.CENTER);
+        mainPanel.add(drinkOrderPanel, BorderLayout.CENTER);   // ← Dòng này phải đúng
 
         add(mainPanel);
     }
