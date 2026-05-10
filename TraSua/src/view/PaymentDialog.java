@@ -8,6 +8,7 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
 public class PaymentDialog extends JDialog {
 
