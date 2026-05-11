@@ -112,9 +112,17 @@ public class LoginFrame extends JFrame {
         // Add components
         int row = 0;
         panel.add(titleLabel, getGbc(gbc, row++));
-        panel.add(new JLabel("Username"), getGbc(gbc, row++));
+        JLabel lblUsername = new JLabel("Tên người dùng");
+        lblUsername.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblUsername.setForeground(new Color(70, 70, 70));
+
+        JLabel lblPassword = new JLabel("Mật khẩu");
+        lblPassword.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblPassword.setForeground(new Color(70, 70, 70));
+
+        panel.add(lblUsername, getGbc(gbc, row++));
         panel.add(txtUsername, getGbc(gbc, row++));
-        panel.add(new JLabel("Password"), getGbc(gbc, row++));
+        panel.add(lblPassword, getGbc(gbc, row++));
         panel.add(txtPassword, getGbc(gbc, row++));
         panel.add(btnLogin, getGbc(gbc, row++));
         panel.add(btnRegister, getGbc(gbc, row));

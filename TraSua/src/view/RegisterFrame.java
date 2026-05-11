@@ -45,14 +45,41 @@ public class RegisterFrame extends JFrame {
         title.setFont(new Font("Segoe UI", Font.BOLD, 24));
         title.setForeground(new Color(0, 128, 128));
 
-        JLabel lblUsername = new JLabel("Username");
+        JLabel lblUsername = new JLabel("Tên nhân viên");
+        lblUsername.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblUsername.setForeground(new Color(0, 128, 128));
+
         txtUsername = new JTextField(20);
+        txtUsername.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        txtUsername.setPreferredSize(new Dimension(250, 42));
+        txtUsername.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(0, 128, 128), 2),
+        BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
 
-        JLabel lblPassword = new JLabel("Password");
+        JLabel lblPassword = new JLabel("Mật khẩu");
+        lblPassword.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblPassword.setForeground(new Color(0, 128, 128));
+
         txtPassword = new JPasswordField(20);
+        txtPassword.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        txtPassword.setPreferredSize(new Dimension(250, 42));
+        txtPassword.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(0, 128, 128), 2),
+        BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
 
-        JLabel lblConfirm = new JLabel("Xác nhận Password");
+        JLabel lblConfirm = new JLabel("Nhập lại mật khẩu");
+        lblConfirm.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblConfirm.setForeground(new Color(0, 128, 128));
+
         txtConfirmPassword = new JPasswordField(20);
+        txtConfirmPassword.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        txtConfirmPassword.setPreferredSize(new Dimension(250, 42));
+        txtConfirmPassword.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(new Color(0, 128, 128), 2),
+        BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
 
         JButton btnRegister = new JButton("Đăng Ký");
         JButton btnBack = new JButton("Quay lại");
