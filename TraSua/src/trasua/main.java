@@ -5,9 +5,9 @@
 package trasua;
 
 import service.AuthService;
-import service.OrderService;
-import view.LoginFrame;
 import javax.swing.*;
+import view.LoginFrame;
+
 
 /**
  *
@@ -21,20 +21,27 @@ public class main {
     public static void main(String[] args) {
         // Chạy giao diện GUI theo kiểu Swing
         SwingUtilities.invokeLater(() -> {
-            try {
-                // Set Look and Feel đẹp hơn
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                
-                AuthService authService = new AuthService();
-                LoginFrame loginFrame = new LoginFrame(authService);
-                loginFrame.setVisible(true);
-                
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, 
-                    "Lỗi khởi động chương trình: " + e.getMessage(), 
-                    "Lỗi", JOptionPane.ERROR_MESSAGE);
-            }
+
+            setSystemLookAndFeel();
+
+            AuthService authService = new AuthService();
+
+            LoginFrame loginFrame = new LoginFrame(authService);
+            loginFrame.setVisible(true);
+
         });
+    }
+
+    private static void setSystemLookAndFeel() {
+        try {
+
+            UIManager.setLookAndFeel(
+                UIManager.getSystemLookAndFeelClassName()
+            );
+
+        } catch (Exception e) {
+
+            System.out.println("Khong the set giao dien he thong.");
+        }
     }
 }
