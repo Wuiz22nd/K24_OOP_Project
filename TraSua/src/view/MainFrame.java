@@ -57,10 +57,10 @@ public class MainFrame extends JFrame {
         topBar.add(btnLogout, BorderLayout.EAST);
 
         // Drink Order Panel
-        drinkOrderPanel = new DrinkOrderPanel(orderService);
+        drinkOrderPanel = new DrinkOrderPanel();
 
         mainPanel.add(topBar, BorderLayout.NORTH);
-        mainPanel.add(drinkOrderPanel, BorderLayout.CENTER);   // ← Dòng này phải đúng
+        mainPanel.add(new DrinkOrderPanel(), BorderLayout.CENTER);
 
         add(mainPanel);
     }

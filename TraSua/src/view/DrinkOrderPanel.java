@@ -1,358 +1,515 @@
 package view;
 
-import model.*;
-import service.OrderService;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
 import java.awt.*;
-import java.util.List;
+import java.awt.event.*;
+import java.util.ArrayList;
 
 public class DrinkOrderPanel extends JPanel {
 
-    private final OrderService orderService;
-
-    private JPanel contentPanel;
-
-    private JTable orderTable;
+    private JTable billTable;
     private DefaultTableModel tableModel;
-    private JLabel totalLabel;
 
-    private Tea currentTea;
+    private JPanel centerPanel;
 
-    public DrinkOrderPanel(OrderService orderService) {
-        this.orderService = orderService;
-        initUI();
-    }
+    private String selectedCategory = "Danh sách món";
 
-    private void initUI() {
+    private String selectedDrink = "";
+    private int selectedPrice = 0;
 
-        setLayout(new BorderLayout(10, 10));
-        setBackground(Color.WHITE);
+    private String selectedSize = "M";
+    private String selectedSugar = "100%";
+    private String selectedIce = "100%";
 
-        add(createSidebar(), BorderLayout.WEST);
+    private java.util.List<String> selectedToppings = new ArrayList<>();
 
-        contentPanel = new JPanel(new BorderLayout());
-        contentPanel.setBackground(Color.WHITE);
+    public DrinkOrderPanel() {
+
+        setLayout(new BorderLayout());
+
+        createTopBillPanel();
+        createBottomPanel();
 
         showDrinkMenu();
-
-        add(contentPanel, BorderLayout.CENTER);
-
-        add(createRightPanel(), BorderLayout.EAST);
     }
 
-    // ================= SIDEBAR =================
-
-    private JPanel createSidebar() {
-
-        JPanel panel = new JPanel(new GridLayout(5,1,5,5));
-
-        panel.setPreferredSize(new Dimension(180,0));
-
-        String[] menus = {
-                "Danh sách món",
-                "Size",
-                "Đường",
-                "Đá",
-                "Topping"
-        };
-
-        for (int i = 0; i < menus.length; i++) {
-
-            int index = i;
-
-            JButton btn = new JButton(menus[i]);
-
-            btn.addActionListener(e -> switchMenu(index));
-
-            panel.add(btn);
-        }
-
-        return panel;
-    }
-
-    private void switchMenu(int index) {
-
-        contentPanel.removeAll();
-
-        switch (index) {
-
-            case 0:
-                showDrinkMenu();
-                break;
-
-            case 1:
-                showSizeMenu();
-                break;
-
-            case 2:
-                showSugarMenu();
-                break;
-
-            case 3:
-                showIceMenu();
-                break;
-
-            case 4:
-                showToppingMenu();
-                break;
-        }
-
-        contentPanel.revalidate();
-        contentPanel.repaint();
-    }
-
-    // ================= DRINK =================
-
-    private void showDrinkMenu() {
-
-        JPanel panel = new JPanel(new GridLayout(1,3,20,20));
-
-        JButton milkTea = new JButton("Trà Sữa");
-        JButton matcha = new JButton("Matcha");
-        JButton chocolate = new JButton("Socola");
-
-        milkTea.addActionListener(e -> {
-            currentTea = new MilkTea();
-        });
-
-        matcha.addActionListener(e -> {
-            currentTea = new MatchaTea();
-        });
-
-        chocolate.addActionListener(e -> {
-            currentTea = new ChocolateTea();
-        });
-
-        panel.add(milkTea);
-        panel.add(matcha);
-        panel.add(chocolate);
-
-        contentPanel.add(panel, BorderLayout.CENTER);
-    }
-
-    // ================= SIZE =================
-
-    private void showSizeMenu() {
-
-        if (currentTea == null) {
-            JOptionPane.showMessageDialog(this, "Chọn món trước");
-            return;
-        }
-
-        JPanel panel = new JPanel(new GridLayout(1,3,20,20));
-
-        JButton s = new JButton("S");
-        JButton m = new JButton("M");
-        JButton l = new JButton("L");
-
-        s.addActionListener(e -> currentTea.setSize(Size.SMALL));
-        m.addActionListener(e -> currentTea.setSize(Size.MEDIUM));
-        l.addActionListener(e -> currentTea.setSize(Size.LARGE));
-
-        panel.add(s);
-        panel.add(m);
-        panel.add(l);
-
-        contentPanel.add(panel, BorderLayout.CENTER);
-    }
-
-    // ================= SUGAR =================
-
-    private void showSugarMenu() {
-
-        if (currentTea == null) {
-            JOptionPane.showMessageDialog(this, "Chọn món trước");
-            return;
-        }
-
-        JPanel panel = new JPanel(new GridLayout(1,5,15,15));
-
-        addSugarButton(panel,"0%",SugarLevel.ZERO);
-        addSugarButton(panel,"30%",SugarLevel.THIRTY);
-        addSugarButton(panel,"50%",SugarLevel.FIFTY);
-        addSugarButton(panel,"70%",SugarLevel.SEVENTY);
-        addSugarButton(panel,"100%",SugarLevel.FULL);
-
-        contentPanel.add(panel, BorderLayout.CENTER);
-    }
-
-    private void addSugarButton(JPanel panel, String text, SugarLevel level) {
-
-        JButton btn = new JButton(text);
-
-        btn.addActionListener(e -> {
-            currentTea.setSugarLevel(level);
-        });
-
-        panel.add(btn);
-    }
-
-    // ================= ICE =================
-
-    private void showIceMenu() {
-
-        if (currentTea == null) {
-            JOptionPane.showMessageDialog(this, "Chọn món trước");
-            return;
-        }
-
-        JPanel panel = new JPanel(new GridLayout(1,4,15,15));
-
-        addIceButton(panel,"Không đá",IceLevel.NONE);
-        addIceButton(panel,"Ít đá",IceLevel.LESS);
-        addIceButton(panel,"Vừa đá",IceLevel.NORMAL);
-        addIceButton(panel,"Nhiều đá",IceLevel.MORE);
-
-        contentPanel.add(panel, BorderLayout.CENTER);
-    }
-
-    private void addIceButton(JPanel panel, String text, IceLevel level) {
-
-        JButton btn = new JButton(text);
-
-        btn.addActionListener(e -> {
-            currentTea.setIceLevel(level);
-        });
-
-        panel.add(btn);
-    }
-
-    // ================= TOPPING =================
-
-    private void showToppingMenu() {
-
-        if (currentTea == null) {
-            JOptionPane.showMessageDialog(this, "Chọn món trước");
-            return;
-        }
-
-        JPanel panel = new JPanel(new BorderLayout());
-
-        JPanel checkPanel = new JPanel(new GridLayout(3,1));
-
-        JCheckBox pearl = new JCheckBox("Trân châu");
-        JCheckBox cheese = new JCheckBox("Cheese");
-        JCheckBox pudding = new JCheckBox("Pudding");
-
-        checkPanel.add(pearl);
-        checkPanel.add(cheese);
-        checkPanel.add(pudding);
-
-        JButton confirm = new JButton("Xác nhận");
-
-        confirm.addActionListener(e -> {
-
-            Tea finalTea = currentTea;
-
-            if (pearl.isSelected()) {
-                finalTea = new Pearl(finalTea);
-            }
-
-            if (cheese.isSelected()) {
-                finalTea = new Cheese(finalTea);
-            }
-
-            if (pudding.isSelected()) {
-                finalTea = new Pudding(finalTea);
-            }
-
-            currentTea = finalTea;
-
-            JOptionPane.showMessageDialog(this, "Đã thêm topping");
-        });
-
-        panel.add(checkPanel, BorderLayout.CENTER);
-        panel.add(confirm, BorderLayout.SOUTH);
-
-        contentPanel.add(panel, BorderLayout.CENTER);
-    }
-
-    // ================= RIGHT PANEL =================
-
-    private JPanel createRightPanel() {
-
-        JPanel panel = new JPanel(new BorderLayout());
-
-        panel.setPreferredSize(new Dimension(350,0));
-
-        panel.add(createOrderTable(), BorderLayout.CENTER);
-
-        JButton addButton = new JButton("THÊM VÀO HÓA ĐƠN");
-
-        addButton.addActionListener(e -> addToOrder());
-
-        panel.add(addButton, BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-    private JPanel createOrderTable() {
-
-        JPanel panel = new JPanel(new BorderLayout());
+    // ==========================
+    // TOP BILL
+    // ==========================
+    private void createTopBillPanel() {
 
         String[] columns = {
-                "Tên món",
-                "Giá"
+            "STT",
+            "Tên món",
+            "Giá",
+            "-",
+            "SL",
+            "+",
+            "Tổng"
         };
 
-        tableModel = new DefaultTableModel(columns,0);
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 3 || column == 5;
+            }
+        };
 
-        orderTable = new JTable(tableModel);
+        billTable = new JTable(tableModel);
 
-        totalLabel = new JLabel("Tổng: 0 VND");
+        billTable.setRowHeight(45);
+        billTable.setFont(new Font("Arial", Font.PLAIN, 18));
+        billTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 18));
 
-        panel.add(new JScrollPane(orderTable), BorderLayout.CENTER);
-        panel.add(totalLabel, BorderLayout.SOUTH);
+        // button renderer
+        billTable.getColumn("-").setCellRenderer(new ButtonRenderer());
+        billTable.getColumn("+").setCellRenderer(new ButtonRenderer());
 
-        return panel;
+        // button editor
+        billTable.getColumn("-").setCellEditor(new ButtonEditor(new JCheckBox()));
+        billTable.getColumn("+").setCellEditor(new ButtonEditor(new JCheckBox()));
+
+        JScrollPane scrollPane = new JScrollPane(billTable);
+
+        scrollPane.setPreferredSize(new Dimension(0, 300));
+
+        add(scrollPane, BorderLayout.NORTH);
     }
 
-    // ================= ADD ORDER =================
+    // ==========================
+    // BOTTOM AREA
+    // ==========================
+    private void createBottomPanel() {
 
-    private void addToOrder() {
+        JPanel bottomPanel = new JPanel(new BorderLayout());
 
-        if (currentTea == null) {
-            JOptionPane.showMessageDialog(this, "Chưa chọn món");
-            return;
+        // LEFT MENU
+        JPanel leftMenu = new JPanel(new GridLayout(5, 1, 5, 5));
+
+        String[] menus = {
+            "Danh sách món",
+            "Size",
+            "Lượng đường",
+            "Lượng đá",
+            "Topping"
+        };
+
+        for (String menu : menus) {
+
+            JButton btn = new JButton(menu);
+
+            btn.setFont(new Font("Arial", Font.BOLD, 20));
+
+            btn.addActionListener(e -> {
+
+                selectedCategory = menu;
+
+                switch (menu) {
+
+                    case "Danh sách món":
+                        showDrinkMenu();
+                        break;
+
+                    case "Size":
+                        showSizeMenu();
+                        break;
+
+                    case "Lượng đường":
+                        showSugarMenu();
+                        break;
+
+                    case "Lượng đá":
+                        showIceMenu();
+                        break;
+
+                    case "Topping":
+                        showToppingMenu();
+                        break;
+                }
+            });
+
+            leftMenu.add(btn);
         }
 
-        try {
+        // CENTER PANEL
+        centerPanel = new JPanel(new GridLayout(2, 3, 15, 15));
 
-            orderService.processOrder(currentTea);
+        // RIGHT BUTTONS
+        JPanel rightButtons = new JPanel(new GridLayout(4, 1, 10, 10));
 
-            refreshTable();
+        JButton cancelBtn = new JButton("Hủy đơn");
+        JButton removeBtn = new JButton("Xóa món");
+        JButton addBtn = new JButton("Thêm vào");
+        JButton paymentBtn = new JButton("Thanh toán");
 
-            currentTea = null;
+        Font btnFont = new Font("Arial", Font.BOLD, 22);
 
-            JOptionPane.showMessageDialog(this, "Đã thêm vào hóa đơn");
+        cancelBtn.setFont(btnFont);
+        removeBtn.setFont(btnFont);
+        addBtn.setFont(btnFont);
+        paymentBtn.setFont(btnFont);
 
-        } catch (Exception e) {
+        // ADD TO BILL
+        addBtn.addActionListener(e -> {
 
-            JOptionPane.showMessageDialog(this, e.getMessage());
-        }
+            if (selectedDrink.isEmpty()) {
+
+                JOptionPane.showMessageDialog(this,
+                        "Vui lòng chọn món!");
+
+                return;
+            }
+
+            String toppingText = "";
+
+            if (!selectedToppings.isEmpty()) {
+
+                toppingText =
+                        " + "
+                        + String.join(", ", selectedToppings);
+            }
+
+            String fullName =
+                    selectedDrink
+                    + " + " + selectedSize
+                    + " + " + selectedSugar
+                    + " + " + selectedIce
+                    + toppingText;
+
+            tableModel.addRow(new Object[]{
+                tableModel.getRowCount() + 1,
+                fullName,
+                selectedPrice + " VND",
+                "-",
+                1,
+                "+",
+                selectedPrice + " VND"
+            });
+        });
+
+        // REMOVE
+        removeBtn.addActionListener(e -> {
+
+            int row = billTable.getSelectedRow();
+
+            if (row >= 0) {
+
+                tableModel.removeRow(row);
+
+                refreshSTT();
+            }
+        });
+
+        // CANCEL
+        cancelBtn.addActionListener(e -> {
+            tableModel.setRowCount(0);
+        });
+
+        rightButtons.add(cancelBtn);
+        rightButtons.add(removeBtn);
+        rightButtons.add(addBtn);
+        rightButtons.add(paymentBtn);
+
+        bottomPanel.add(leftMenu, BorderLayout.WEST);
+        bottomPanel.add(centerPanel, BorderLayout.CENTER);
+        bottomPanel.add(rightButtons, BorderLayout.EAST);
+
+        add(bottomPanel, BorderLayout.CENTER);
     }
 
-    private void refreshTable() {
+    // ==========================
+    // DRINK MENU
+    // ==========================
+    private void showDrinkMenu() {
 
-        tableModel.setRowCount(0);
+        centerPanel.removeAll();
 
-        Order order = orderService.getCurrentOrder();
+        addDrinkButton("Trà Sữa", 30000);
+        addDrinkButton("Matcha", 35000);
+        addDrinkButton("Socola", 40000);
+        addDrinkButton("Oolong", 32000);
+        addDrinkButton("Dâu", 36000);
+        addDrinkButton("Khoai môn", 38000);
 
-        List<Tea> drinks = order.getDrinks();
+        centerPanel.revalidate();
+        centerPanel.repaint();
+    }
 
-        for (Tea tea : drinks) {
+    private void addDrinkButton(String name, int price) {
 
-            Object[] row = {
-                    tea.getDescription(),
-                    tea.getCost()
-            };
-
-            tableModel.addRow(row);
-        }
-
-        totalLabel.setText(
-                "Tổng: " + order.calculateTotal() + " VND"
+        JButton btn = new JButton(
+                "<html><center>"
+                + name
+                + "<br>"
+                + price
+                + " VND</center></html>"
         );
+
+        btn.setFont(new Font("Arial", Font.BOLD, 22));
+
+        btn.addActionListener(e -> {
+
+            selectedDrink = name;
+            selectedPrice = price;
+        });
+
+        centerPanel.add(btn);
+    }
+
+    // ==========================
+    // SIZE
+    // ==========================
+    private void showSizeMenu() {
+
+        centerPanel.removeAll();
+
+        String[] sizes = {"S", "M", "L"};
+
+        for (String s : sizes) {
+
+            JButton btn = new JButton(s);
+
+            btn.setFont(new Font("Arial", Font.BOLD, 28));
+
+            btn.addActionListener(e -> {
+                selectedSize = s;
+            });
+
+            centerPanel.add(btn);
+        }
+
+        centerPanel.revalidate();
+        centerPanel.repaint();
+    }
+
+    // ==========================
+    // SUGAR
+    // ==========================
+    private void showSugarMenu() {
+
+        centerPanel.removeAll();
+
+        String[] sugars = {
+            "0%",
+            "30%",
+            "50%",
+            "70%",
+            "100%"
+        };
+
+        for (String sugar : sugars) {
+
+            JButton btn = new JButton(sugar);
+
+            btn.setFont(new Font("Arial", Font.BOLD, 24));
+
+            btn.addActionListener(e -> {
+                selectedSugar = sugar;
+            });
+
+            centerPanel.add(btn);
+        }
+
+        centerPanel.revalidate();
+        centerPanel.repaint();
+    }
+
+    // ==========================
+    // ICE
+    // ==========================
+    private void showIceMenu() {
+
+        centerPanel.removeAll();
+
+        String[] ices = {
+            "Không đá",
+            "Ít đá",
+            "50%",
+            "100%"
+        };
+
+        for (String ice : ices) {
+
+            JButton btn = new JButton(ice);
+
+            btn.setFont(new Font("Arial", Font.BOLD, 24));
+
+            btn.addActionListener(e -> {
+                selectedIce = ice;
+            });
+
+            centerPanel.add(btn);
+        }
+
+        centerPanel.revalidate();
+        centerPanel.repaint();
+    }
+
+    // ==========================
+    // TOPPING
+    // ==========================
+    private void showToppingMenu() {
+
+        centerPanel.removeAll();
+
+        String[] toppings = {
+            "Trân châu",
+            "Thạch",
+            "Pudding",
+            "Kem cheese"
+        };
+
+        for (String topping : toppings) {
+
+            JToggleButton btn = new JToggleButton(topping);
+
+            btn.setFont(new Font("Arial", Font.BOLD, 20));
+
+            btn.addActionListener(e -> {
+
+                if (btn.isSelected()) {
+
+                    if (!selectedToppings.contains(topping)) {
+                        selectedToppings.add(topping);
+                    }
+
+                } else {
+
+                    selectedToppings.remove(topping);
+                }
+            });
+
+            centerPanel.add(btn);
+        }
+
+        centerPanel.revalidate();
+        centerPanel.repaint();
+    }
+
+    // ==========================
+    // REFRESH STT
+    // ==========================
+    private void refreshSTT() {
+
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+
+            tableModel.setValueAt(i + 1, i, 0);
+        }
+    }
+
+    // ==========================
+    // BUTTON RENDERER
+    // ==========================
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+
+        public ButtonRenderer() {
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
+                int column) {
+
+            setText(value.toString());
+
+            return this;
+        }
+    }
+
+    // ==========================
+    // BUTTON EDITOR
+    // ==========================
+    class ButtonEditor extends DefaultCellEditor {
+
+        private JButton button;
+
+        private String label;
+
+        private boolean clicked;
+
+        private int row;
+        private int column;
+
+        public ButtonEditor(JCheckBox checkBox) {
+
+            super(checkBox);
+
+            button = new JButton();
+
+            button.setOpaque(true);
+
+            button.addActionListener(e -> fireEditingStopped());
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                int row,
+                int column) {
+
+            this.row = row;
+            this.column = column;
+
+            label = value.toString();
+
+            button.setText(label);
+
+            clicked = true;
+
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+
+            if (clicked) {
+
+                int quantity =
+                        Integer.parseInt(
+                                tableModel.getValueAt(row, 4).toString()
+                        );
+
+                String priceText =
+                        tableModel.getValueAt(row, 2)
+                                .toString()
+                                .replace(" VND", "");
+
+                int price = Integer.parseInt(priceText);
+
+                if (column == 5) {
+                    quantity++;
+                }
+
+                if (column == 3 && quantity > 1) {
+                    quantity--;
+                }
+
+                tableModel.setValueAt(quantity, row, 4);
+
+                int total = quantity * price;
+
+                tableModel.setValueAt(total + " VND", row, 6);
+            }
+
+            clicked = false;
+
+            return label;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+
+            clicked = false;
+
+            return super.stopCellEditing();
+        }
     }
 }
