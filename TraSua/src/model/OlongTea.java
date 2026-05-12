@@ -16,7 +16,7 @@ public class OlongTea extends Tea {
 
     @Override
     public String[] getIngredientNames() {
-        return new String[]{"tra_olong", "sua", "duong", "da"};
+        return new String[]{"tra", "sua", "duong", "da"};
     }
 
     @Override

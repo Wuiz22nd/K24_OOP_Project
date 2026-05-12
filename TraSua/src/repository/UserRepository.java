@@ -9,65 +9,147 @@ package repository;
  * @author Minhphat
  */
 import model.User;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository {
-    private static final String FILE = "users.txt";
 
+    private static final String FILE_NAME = "users.txt";
+
+    // =========================================
+    // SAVE USER
+    // =========================================
+    public void saveUser(User user) {
+
+        try (
+
+                BufferedWriter bw =
+                        new BufferedWriter(
+                                new FileWriter(
+                                        FILE_NAME,
+                                        true
+                                )
+                        )
+
+        ) {
+
+            bw.write(
+                    user.getUsername()
+                    + ","
+                    + user.getPassword()
+            );
+
+            bw.newLine();
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    // =========================================
+    // CHECK EXIST
+    // =========================================
     public boolean exists(String username) {
-        for (User u : getAllUsers()) {
-            if (u.getUsername().equals(username)) {
+
+        List<User> users = getAllUsers();
+
+        for (User user : users) {
+
+            if (
+                    user.getUsername()
+                            .equalsIgnoreCase(username)
+            ) {
+
                 return true;
             }
         }
+
         return false;
     }
 
-    public void saveUser(User user) {
-        if (exists(user.getUsername())) {
-            System.out.println("Username da ton tai!");
-            return;
-        }
-        try (PrintWriter pw = new PrintWriter(new FileWriter(FILE, true))) {
-            pw.println(user.getUsername() + "," + user.getPassword());
-            System.out.println("Dang ky thanh cong!");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    // =========================================
+    // GET ALL USERS
+    // =========================================
     public List<User> getAllUsers() {
-        List<User> users = new ArrayList<>();
-        File file = new File(FILE);
+
+        List<User> users =
+                new ArrayList<>();
+
+        File file = new File(FILE_NAME);
+
         if (!file.exists()) {
+
             return users;
         }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (
+
+                BufferedReader br =
+                        new BufferedReader(
+                                new FileReader(file)
+                        )
+
+        ) {
+
             String line;
+
             while ((line = br.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty()) continue;
-                
-                String[] parts = line.split(",");
-                if (parts.length == 2) {
-                    users.add(new User(parts[0].trim(), parts[1].trim()));
+
+                String[] data =
+                        line.split(",");
+
+                if (data.length == 2) {
+
+                    User user =
+                            new User(
+                                    data[0],
+                                    data[1]
+                            );
+
+                    users.add(user);
                 }
             }
-        } catch (Exception e) {
+
+        } catch (IOException e) {
+
             e.printStackTrace();
         }
+
         return users;
     }
 
-    public User findUser(String username, String password) {
-        for (User u : getAllUsers()) {
-            if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
-                return u;
+    // =========================================
+    // LOGIN
+    // =========================================
+    public User findUser(
+            String username,
+            String password
+    ) {
+
+        List<User> users = getAllUsers();
+
+        for (User user : users) {
+
+            boolean correctUsername =
+                    user.getUsername()
+                            .equals(username);
+
+            boolean correctPassword =
+                    user.getPassword()
+                            .equals(password);
+
+            if (
+                    correctUsername
+                    && correctPassword
+            ) {
+
+                return user;
             }
         }
+
         return null;
     }
 }

@@ -15,25 +15,47 @@ public class OrderService {
     private final InventoryRepository inventoryRepo = new InventoryRepository();
     private Order currentOrder = new Order();
 
-    public void processOrder(Tea tea) throws InsufficientStockException {
-        String[] names = tea.getIngredientNames();
-        int[] quantities = tea.getIngredientQuantities();   // Luôn dùng cái này để bao gồm topping
+        public void processOrder(Tea tea)
+        throws InsufficientStockException {
 
-        // Kiem tra kho
-        for (int i = 0; i < names.length; i++) {
-            if (!inventoryRepo.hasEnough(names[i], quantities[i])) {
-                throw new InsufficientStockException("Khong du nguyen lieu: " + names[i]);
-            }
+    if (tea == null) return;
+
+    String[] names =
+            tea.getIngredientNames();
+
+    int[] quantities =
+            tea.getIngredientQuantities();
+
+    // CHECK STOCK
+    for (int i = 0; i < names.length; i++) {
+
+        if (!inventoryRepo.hasEnough(
+                names[i],
+                quantities[i]
+        )) {
+
+            throw new InsufficientStockException(
+                    "Không đủ nguyên liệu: "
+                            + names[i]
+            );
         }
-
-        // Tru kho
-        for (int i = 0; i < names.length; i++) {
-            inventoryRepo.deduct(names[i], quantities[i]);
-        }
-
-        currentOrder.addDrink(tea);
-        System.out.println("Da tru kho thanh cong.");
     }
+
+    // DEDUCT
+    for (int i = 0; i < names.length; i++) {
+
+        inventoryRepo.deduct(
+                names[i],
+                quantities[i]
+        );
+    }
+
+    currentOrder.addDrink(tea);
+
+    System.out.println(
+            "Da luu vao hoa don."
+    );
+}
 
     public Order getCurrentOrder() {
         return currentOrder;

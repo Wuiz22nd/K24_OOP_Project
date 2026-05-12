@@ -16,11 +16,11 @@ import java.awt.*;
 public class LoginFrame extends JFrame {
 
     private final AuthService authService;
+
     private JTextField txtUsername;
     private JPasswordField txtPassword;
-    private MainFrame mainFrame;
 
-    // Constants - Dễ chỉnh sửa
+    // UI Colors (giữ như cũ)
     private static final Color PRIMARY_COLOR = new Color(0, 128, 128);
     private static final Color BACKGROUND_COLOR = Color.WHITE;
     private static final Color BUTTON_BG = new Color(245, 245, 245);
@@ -41,10 +41,7 @@ public class LoginFrame extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(BACKGROUND_COLOR);
 
-        // Left Panel - Logo
         JPanel leftPanel = createLeftPanel();
-        
-        // Right Panel - Form
         JPanel rightPanel = createRightPanel();
 
         mainPanel.add(leftPanel, BorderLayout.WEST);
@@ -52,43 +49,62 @@ public class LoginFrame extends JFrame {
 
         add(mainPanel);
 
-        // Default focus
         txtUsername.requestFocusInWindow();
     }
 
     private JPanel createLeftPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(PRIMARY_COLOR);
-        panel.setPreferredSize(new Dimension(430, 620));
 
-        JLabel logoLabel = new JLabel();
-        ImageIcon icon = loadImage("/images/bubble_tea_logo.png");
+    JPanel panel = new JPanel(new GridBagLayout());
 
-        if (icon != null) {
-            Image scaledImage = icon.getImage().getScaledInstance(320, 320, Image.SCALE_SMOOTH);
-            logoLabel.setIcon(new ImageIcon(scaledImage));
-        } else {
-            logoLabel.setText("🧋");
-            logoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 180));
-            logoLabel.setForeground(Color.WHITE);
-        }
+    panel.setBackground(PRIMARY_COLOR);
 
-        JLabel brandLabel = new JLabel("TRÀ SỮA", SwingConstants.CENTER);
-        brandLabel.setFont(new Font("Segoe UI", Font.BOLD, 34));
-        brandLabel.setForeground(Color.WHITE);
+    panel.setPreferredSize(new Dimension(430, 620));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(logoLabel, gbc);
+    // LOAD IMAGE
+    ImageIcon icon = new ImageIcon(
+            getClass().getResource(
+                    "/images/bubble_tea_logo.png"
+            )
+    );
 
-        gbc.gridy = 1;
-        gbc.insets = new Insets(20, 0, 0, 0);
-        panel.add(brandLabel, gbc);
+    Image img = icon.getImage().getScaledInstance(
+            280,
+            280,
+            Image.SCALE_SMOOTH
+    );
 
-        return panel;
-    }
+    JLabel logoLabel = new JLabel(
+            new ImageIcon(img)
+    );
 
+    JLabel brandLabel = new JLabel(
+            "TRÀ SỮA",
+            SwingConstants.CENTER
+    );
+
+    brandLabel.setFont(
+            new Font("Segoe UI", Font.BOLD, 34)
+    );
+
+    brandLabel.setForeground(Color.WHITE);
+
+    GridBagConstraints gbc =
+            new GridBagConstraints();
+
+    gbc.gridx = 0;
+
+    gbc.gridy = 0;
+
+    panel.add(logoLabel, gbc);
+
+    gbc.gridy = 1;
+
+    gbc.insets = new Insets(20, 0, 0, 0);
+
+    panel.add(brandLabel, gbc);
+
+    return panel;
+}
     private JPanel createRightPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(BACKGROUND_COLOR);
@@ -98,7 +114,6 @@ public class LoginFrame extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
 
-        // Title
         JLabel titleLabel = new JLabel("ĐĂNG NHẬP", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(PRIMARY_COLOR);
@@ -109,25 +124,15 @@ public class LoginFrame extends JFrame {
         JButton btnLogin = createStyledButton("Sign In");
         JButton btnRegister = createStyledButton("Register");
 
-        // Add components
         int row = 0;
         panel.add(titleLabel, getGbc(gbc, row++));
-        JLabel lblUsername = new JLabel("Tên người dùng");
-        lblUsername.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        lblUsername.setForeground(new Color(70, 70, 70));
-
-        JLabel lblPassword = new JLabel("Mật khẩu");
-        lblPassword.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        lblPassword.setForeground(new Color(70, 70, 70));
-
-        panel.add(lblUsername, getGbc(gbc, row++));
+        panel.add(new JLabel("Username"), getGbc(gbc, row++));
         panel.add(txtUsername, getGbc(gbc, row++));
-        panel.add(lblPassword, getGbc(gbc, row++));
+        panel.add(new JLabel("Password"), getGbc(gbc, row++));
         panel.add(txtPassword, getGbc(gbc, row++));
         panel.add(btnLogin, getGbc(gbc, row++));
         panel.add(btnRegister, getGbc(gbc, row));
 
-        // Events
         btnLogin.addActionListener(e -> performLogin());
         btnRegister.addActionListener(e -> performRegister());
         txtPassword.addActionListener(e -> performLogin());
@@ -151,44 +156,54 @@ public class LoginFrame extends JFrame {
         return gbc;
     }
 
-    private ImageIcon loadImage(String path) {
-        try {
-            java.net.URL imgURL = getClass().getResource(path);
-            return (imgURL != null) ? new ImageIcon(imgURL) : null;
-        } catch (Exception e) {
-            System.err.println("Không load được ảnh: " + path);
-            return null;
-        }
+    // ===================== LOGIN FLOW =====================
+private void performLogin() {
+
+    String username = txtUsername.getText().trim();
+    String password = new String(txtPassword.getPassword()).trim();
+
+    // CHECK EMPTY
+    if (username.isEmpty() || password.isEmpty()) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Vui lòng nhập đầy đủ thông tin!"
+        );
+
+        return;
     }
 
-    private void performLogin() {
-        String username = txtUsername.getText().trim();
-        String password = new String(txtPassword.getPassword()).trim();
+    // LOGIN SUCCESS
+    if (authService.login(username, password)) {
 
-        if (username.isEmpty() || password.isEmpty()) {
-            showMessage("Vui lòng nhập Username và Password!", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        dispose(); // đóng login
 
-        if (authService.login(username, password)) {
-            dispose();
-            if (mainFrame == null) {
-                mainFrame = new MainFrame(authService, new OrderService());
-            }
-            mainFrame.setVisible(true);
-        } else {
-            showMessage("Sai tên đăng nhập hoặc mật khẩu!", JOptionPane.ERROR_MESSAGE);
-            txtPassword.setText("");
-            txtUsername.requestFocus();
-        }
+        MainFrame mainFrame = new MainFrame(
+                authService,
+                new OrderService()
+        );
+
+        mainFrame.setVisible(true);
+
+    } else {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Sai tài khoản hoặc mật khẩu!"
+        );
+
+        txtPassword.setText("");
+        txtUsername.requestFocus();
     }
+}
 
     private void performRegister() {
-        dispose();
-        new RegisterFrame(authService, this).setVisible(true);
-    }
 
-    private void showMessage(String message, int messageType) {
-        JOptionPane.showMessageDialog(this, message, "Thông báo", messageType);
+    setVisible(false);
+
+    RegisterFrame registerFrame =
+            new RegisterFrame(authService, this);
+
+    registerFrame.setVisible(true);
     }
 }

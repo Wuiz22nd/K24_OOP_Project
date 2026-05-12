@@ -6,17 +6,17 @@ package model;
 
 /**
  *
- * @author wuiz
+ * @author Minhphat
  */
 public class Pudding extends ToppingDecorator {
 
     public Pudding(Tea tea) {
-        super(tea, "Thach", 12000);
+        super(tea, "Pudding", 12000);
     }
 
     @Override
     protected String[] getOwnIngredientNames() {
-        return new String[]{"thach"};
+        return new String[]{"pudding"};
     }
 
     @Override

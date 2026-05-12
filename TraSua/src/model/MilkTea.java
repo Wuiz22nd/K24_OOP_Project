@@ -6,7 +6,7 @@ package model;
 
 /**
  *
- * @author wuiz
+ * @author Minhphat
  */
 public class MilkTea extends Tea {
 
@@ -21,6 +21,20 @@ public class MilkTea extends Tea {
 
     @Override
     public int[] getIngredientQuantities() {
-        return new int[]{200, 150, 50, 100};
+
+        String[] names =
+                getIngredientNames();
+
+        int[] base = new int[]{
+                200,
+                150,
+                50,
+                100
+        };
+
+        return scaleIngredients(
+                names,
+                base
+        );
     }
 }

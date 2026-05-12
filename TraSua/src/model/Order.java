@@ -6,7 +6,7 @@ package model;
 
 /**
  *
- * @author wuiz
+ * @author Minhphat
  */
 import java.util.ArrayList;
 import java.util.List;

@@ -16,7 +16,7 @@ public class TaroTea extends Tea {
 
     @Override
     public String[] getIngredientNames() {
-        return new String[]{"bot_khoai_mon", "sua", "duong", "da"};
+        return new String[]{"tra", "sua", "duong", "da"};
     }
 
     @Override

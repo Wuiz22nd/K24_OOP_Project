@@ -8,75 +8,232 @@ package view;
  *
  * @author Minhphat
  */
-import service.AuthService;
-import java.util.Scanner;
+import javax.swing.*;
+import java.awt.*;
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
-public class AuthView {
-    private final AuthService authService;
-    private final Scanner sc;
+public class AuthView extends JFrame {
 
-    public AuthView(AuthService authService, Scanner sc) {
-        this.authService = authService;
-        this.sc = sc;
+    private JTextField loginEmailField;
+    private JPasswordField loginPasswordField;
+
+    private JTextField registerEmailField;
+    private JPasswordField registerPasswordField;
+
+    public AuthView() {
+
+        setTitle("Đăng nhập / Đăng ký");
+
+        setSize(500, 400);
+
+        setLocationRelativeTo(null);
+
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        setLayout(new GridLayout(1, 2));
+
+        add(createLoginPanel());
+
+        add(createRegisterPanel());
+
+        setVisible(true);
     }
 
-    public boolean start() {
-        while (true) {
-            System.out.println("\n=== LOGIN ===");
-            System.out.println("1. Dang ky");
-            System.out.println("2. Dang nhap");
-            System.out.println("3. Thoat");
-            System.out.print("Chon: ");
+    // =====================================================
+    // LOGIN PANEL
+    // =====================================================
+    private JPanel createLoginPanel() {
 
-            int choice = inputInt();
+        JPanel panel = new JPanel();
 
-            if (choice == 1) {
-                signUp();
-            } else if (choice == 2) {
-                if (login()) {
-                    return true;
-                }
-            } else if (choice == 3) {
-                System.out.println("Tam biet!");
-                return false;
-            } else {
-                System.out.println("Lua chon khong hop le!");
+        panel.setBorder(
+                BorderFactory.createTitledBorder("Đăng nhập")
+        );
+
+        panel.setLayout(new GridLayout(5, 1, 10, 10));
+
+        loginEmailField = new JTextField();
+
+        loginPasswordField = new JPasswordField();
+
+        JButton loginBtn = new JButton("Đăng nhập");
+
+        panel.add(new JLabel("Email:"));
+
+        panel.add(loginEmailField);
+
+        panel.add(new JLabel("Mật khẩu:"));
+
+        panel.add(loginPasswordField);
+
+        panel.add(loginBtn);
+
+        // ==========================================
+        // LOGIN ACTION
+        // ==========================================
+        loginBtn.addActionListener(e -> {
+
+            String email =
+                    loginEmailField.getText().trim();
+
+            String password =
+                    new String(
+                            loginPasswordField.getPassword()
+                    );
+
+            // EMPTY
+            if (email.isEmpty() || password.isEmpty()) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Vui lòng nhập đầy đủ thông tin!"
+                );
+
+                return;
             }
-        }
+
+            // EMAIL FORMAT
+            if (!isValidLoginEmail(email)) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Email phải có ít nhất 6 ký tự và kết thúc bằng @gmail.com"
+                );
+
+                return;
+            }
+
+            // LOGIN SUCCESS
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Đăng nhập thành công!"
+            );
+
+            // MỞ MAIN FRAME
+            // new MainFrame();
+
+        });
+
+        return panel;
     }
 
-    private void signUp() {
-        System.out.print("Ten dang nhap: ");
-        String username = sc.nextLine().trim();
-        System.out.print("Mat khau: ");
-        String password = sc.nextLine().trim();
+    // =====================================================
+    // REGISTER PANEL
+    // =====================================================
+    private JPanel createRegisterPanel() {
 
-        if (authService.signUp(username, password)) {
-            System.out.println("Dang ky thanh cong!");
-        } else {
-            System.out.println("Dang ky that bai!");
-        }
+        JPanel panel = new JPanel();
+
+        panel.setBorder(
+                BorderFactory.createTitledBorder("Đăng ký")
+        );
+
+        panel.setLayout(new GridLayout(5, 1, 10, 10));
+
+        registerEmailField = new JTextField();
+
+        registerPasswordField = new JPasswordField();
+
+        JButton registerBtn = new JButton("Đăng ký");
+
+        panel.add(new JLabel("Email:"));
+
+        panel.add(registerEmailField);
+
+        panel.add(new JLabel("Mật khẩu:"));
+
+        panel.add(registerPasswordField);
+
+        panel.add(registerBtn);
+
+        // ==========================================
+        // REGISTER ACTION
+        // ==========================================
+        registerBtn.addActionListener(e -> {
+
+            String email =
+                    registerEmailField.getText().trim();
+
+            String password =
+                    new String(
+                            registerPasswordField.getPassword()
+                    );
+
+            // EMPTY
+            if (email.isEmpty() || password.isEmpty()) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Vui lòng nhập đầy đủ thông tin!"
+                );
+
+                return;
+            }
+
+            // EMAIL FORMAT
+            if (!isValidLoginEmail(email)) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Email phải có ít nhất 6 ký tự và kết thúc bằng @gmail.com"
+                );
+
+                return;
+            }
+
+            // PASSWORD FORMAT
+            if (!isValidRegisterPassword(password)) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Mật khẩu phải có ít nhất 8 chữ hoặc số"
+                );
+
+                return;
+            }
+
+            // REGISTER SUCCESS
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Đăng ký thành công!"
+            );
+        });
+
+        return panel;
     }
 
-    private boolean login() {
-        System.out.print("Ten dang nhap: ");
-        String username = sc.nextLine().trim();
-        System.out.print("Mat khau: ");
-        String password = sc.nextLine().trim();
+    // =====================================================
+    // VALIDATE LOGIN EMAIL
+    // Ít nhất 6 ký tự + @gmail.com
+    // =====================================================
+    private boolean isValidLoginEmail(String email) {
 
-        if (authService.login(username, password)) {
-            System.out.println("Dang nhap thanh cong!");
-            return true;
-        } else {
-            System.out.println("Sai ten dang nhap hoac mat khau!");
-            return false;
-        }
+        return email.matches(
+                "^[a-zA-Z0-9]{6,}@gmail\\.com$"
+        );
     }
 
-    private int inputInt() {
-        while (!sc.hasNextInt()) sc.next();
-        int choice = sc.nextInt();
-        sc.nextLine();
-        return choice;
+    // =====================================================
+    // VALIDATE PASSWORD
+    // Ít nhất 8 chữ hoặc số
+    // =====================================================
+    private boolean isValidRegisterPassword(
+            String password
+    ) {
+
+        return password.matches(
+                "^[a-zA-Z0-9]{8,}$"
+        );
+    }
+
+    // =====================================================
+    // MAIN
+    // =====================================================
+    public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(() -> {
+
+            new AuthView();
+        });
     }
 }

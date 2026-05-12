@@ -6,7 +6,7 @@ package model;
 
 /**
  *
- * @author wuiz
+ * @author Minhphat
  */
 public class Pearl extends ToppingDecorator {
 

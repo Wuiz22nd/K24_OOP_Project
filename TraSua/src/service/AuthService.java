@@ -12,38 +12,71 @@ import model.User;
 import repository.UserRepository;
 
 public class AuthService {
-    private final UserRepository userRepo = new UserRepository();
+
+    private final UserRepository userRepository;
+
+    // USER ĐANG ĐĂNG NHẬP
     private User currentUser;
 
-    public boolean signUp(String username, String password) {
-        if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            return false;
-        }
-        if (userRepo.exists(username)) {
-            return false;
-        }
-        userRepo.saveUser(new User(username, password));
-        return true;
+    public AuthService() {
+        userRepository = new UserRepository();
     }
 
+    // =====================================================
+    // LOGIN
+    // =====================================================
     public boolean login(String username, String password) {
-        User user = userRepo.findUser(username, password);
+
+        User user = userRepository.findUser(username, password);
+
         if (user != null) {
-            this.currentUser = user;
+
+            currentUser = user;
+
             return true;
         }
+
         return false;
     }
 
-    public void logout() {
-        currentUser = null;
+    // =====================================================
+    // REGISTER
+    // =====================================================
+    public boolean signUp(String username, String password) {
+
+        // Username phải có @gmail.com
+        if (!username.matches("^[a-zA-Z0-9]{6,}@gmail\\.com$")) {
+            return false;
+        }
+
+        // Password ít nhất 8 ký tự/chữ/số
+        if (!password.matches("^[a-zA-Z0-9]{8,}$")) {
+            return false;
+        }
+
+        // Check tồn tại
+        if (userRepository.exists(username)) {
+            return false;
+        }
+
+        User user = new User(username, password);
+
+        userRepository.saveUser(user);
+
+        return true;
     }
 
+    // =====================================================
+    // GET CURRENT USER
+    // =====================================================
     public User getCurrentUser() {
         return currentUser;
     }
 
-    public boolean isLoggedIn() {
-        return currentUser != null;
+    // =====================================================
+    // LOGOUT
+    // =====================================================
+    public void logout() {
+        currentUser = null;
     }
 }

@@ -6,17 +6,11 @@ package AuthServiceTest;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import org.junit.Test;
 
+import org.junit.Test;
 
 import service.AuthService;
 
-
-
-/**
- *
- * @author wuiz
- */
 public class AuthServiceTest {
 
     @Test
@@ -25,8 +19,9 @@ public class AuthServiceTest {
         AuthService auth = new AuthService();
 
         boolean result = auth.signUp(
-        "user_" + System.currentTimeMillis(),
-        "123");
+                "user123@gmail.com",
+                "password123"
+        );
 
         assertTrue(result);
     }
@@ -36,9 +31,41 @@ public class AuthServiceTest {
 
         AuthService auth = new AuthService();
 
-        auth.signUp("admin", "123");
+        auth.signUp(
+                "admin12@gmail.com",
+                "password123"
+        );
 
-        boolean result = auth.signUp("admin", "456");
+        boolean result = auth.signUp(
+                "admin12@gmail.com",
+                "password456"
+        );
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testSignUpFail_InvalidEmail() {
+
+        AuthService auth = new AuthService();
+
+        boolean result = auth.signUp(
+                "abc",
+                "password123"
+        );
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testSignUpFail_InvalidPassword() {
+
+        AuthService auth = new AuthService();
+
+        boolean result = auth.signUp(
+                "user999@gmail.com",
+                "123"
+        );
 
         assertFalse(result);
     }
@@ -48,9 +75,15 @@ public class AuthServiceTest {
 
         AuthService auth = new AuthService();
 
-        auth.signUp("admin", "123");
+        auth.signUp(
+                "login12@gmail.com",
+                "password123"
+        );
 
-        boolean result = auth.login("admin", "123");
+        boolean result = auth.login(
+                "login12@gmail.com",
+                "password123"
+        );
 
         assertTrue(result);
     }
@@ -60,9 +93,15 @@ public class AuthServiceTest {
 
         AuthService auth = new AuthService();
 
-        auth.signUp("admin", "123");
+        auth.signUp(
+                "wrong12@gmail.com",
+                "password123"
+        );
 
-        boolean result = auth.login("admin", "999");
+        boolean result = auth.login(
+                "wrong12@gmail.com",
+                "99999999"
+        );
 
         assertFalse(result);
     }
@@ -72,11 +111,18 @@ public class AuthServiceTest {
 
         AuthService auth = new AuthService();
 
-        auth.signUp("admin", "123");
-        auth.login("admin", "123");
+        auth.signUp(
+                "logout12@gmail.com",
+                "password123"
+        );
+
+        auth.login(
+                "logout12@gmail.com",
+                "password123"
+        );
 
         auth.logout();
 
-        assertFalse(auth.isLoggedIn());
+        assertFalse(auth.getCurrentUser() != null);
     }
 }
