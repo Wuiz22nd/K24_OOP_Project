@@ -109,7 +109,7 @@ public class InventoryPanel extends JPanel {
                 new Color(0, 128, 128)
         );
 
-        refreshBtn.setForeground(Color.WHITE);
+        refreshBtn.setForeground(Color.BLACK);
 
         refreshBtn.setFocusPainted(false);
 

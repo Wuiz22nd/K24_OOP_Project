@@ -27,10 +27,11 @@ public class DrinkOrderPanel extends JPanel {
     private String selectedSugar = "100%";
     private String selectedIce = "Vừa đá";
 
-    private java.util.List<String> selectedToppings = new ArrayList<>();
+    private java.util.List<String> selectedToppings
+            = new ArrayList<>();
 
-    // TOPPING PRICE
-    private final Map<String, Integer> toppingPrices = new HashMap<>();
+    private final Map<String, Integer> toppingPrices
+            = new HashMap<>();
 
     public DrinkOrderPanel() {
 
@@ -53,19 +54,23 @@ public class DrinkOrderPanel extends JPanel {
     private void createTopBillPanel() {
 
         String[] columns = {
-            "STT",
-            "Tên món",
-            "Giá",
-            "-",
-            "SL",
-            "+",
-            "Tổng"
+                "STT",
+                "Tên món",
+                "Giá",
+                "-",
+                "SL",
+                "+",
+                "Tổng"
         };
 
         tableModel = new DefaultTableModel(columns, 0) {
 
             @Override
-            public boolean isCellEditable(int row, int column) {
+            public boolean isCellEditable(
+                    int row,
+                    int column
+            ) {
+
                 return column == 3 || column == 5;
             }
         };
@@ -74,26 +79,36 @@ public class DrinkOrderPanel extends JPanel {
 
         billTable.setRowHeight(45);
 
-        billTable.setFont(new Font("Arial", Font.PLAIN, 17));
+        billTable.setFont(
+                new Font("Arial", Font.PLAIN, 17)
+        );
 
         billTable.getTableHeader().setFont(
                 new Font("Arial", Font.BOLD, 18)
         );
 
-        billTable.getColumn("-").setCellRenderer(new ButtonRenderer());
-        billTable.getColumn("+").setCellRenderer(new ButtonRenderer());
+        billTable.getColumn("-")
+                .setCellRenderer(new ButtonRenderer());
 
-        billTable.getColumn("-").setCellEditor(
-                new ButtonEditor(new JCheckBox())
+        billTable.getColumn("+")
+                .setCellRenderer(new ButtonRenderer());
+
+        billTable.getColumn("-")
+                .setCellEditor(
+                        new ButtonEditor(new JCheckBox())
+                );
+
+        billTable.getColumn("+")
+                .setCellEditor(
+                        new ButtonEditor(new JCheckBox())
+                );
+
+        JScrollPane scrollPane
+                = new JScrollPane(billTable);
+
+        scrollPane.setPreferredSize(
+                new Dimension(0, 300)
         );
-
-        billTable.getColumn("+").setCellEditor(
-                new ButtonEditor(new JCheckBox())
-        );
-
-        JScrollPane scrollPane = new JScrollPane(billTable);
-
-        scrollPane.setPreferredSize(new Dimension(0, 300));
 
         add(scrollPane, BorderLayout.NORTH);
     }
@@ -103,17 +118,21 @@ public class DrinkOrderPanel extends JPanel {
     // ==================================================
     private void createBottomPanel() {
 
-        JPanel bottomPanel = new JPanel(new BorderLayout());
+        JPanel bottomPanel
+                = new JPanel(new BorderLayout());
 
+        // =====================================
         // LEFT MENU
-        JPanel leftMenu = new JPanel(new GridLayout(5, 1, 8, 8));
+        // =====================================
+        JPanel leftMenu
+                = new JPanel(new GridLayout(5, 1, 8, 8));
 
         String[] menus = {
-            "Danh sách món",
-            "Size",
-            "Lượng đường",
-            "Lượng đá",
-            "Topping"
+                "Danh sách món",
+                "Size",
+                "Lượng đường",
+                "Lượng đá",
+                "Topping"
         };
 
         for (String menu : menus) {
@@ -149,24 +168,51 @@ public class DrinkOrderPanel extends JPanel {
             leftMenu.add(btn);
         }
 
+        // =====================================
         // CENTER PANEL
-        centerPanel = new JPanel(new GridLayout(2, 3, 15, 15));
+        // =====================================
+        centerPanel = new JPanel(
+                new GridLayout(2, 3, 15, 15)
+        );
 
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(
-                15, 15, 15, 15
-        ));
+        centerPanel.setBorder(
+                BorderFactory.createEmptyBorder(
+                        15,
+                        15,
+                        15,
+                        15
+                )
+        );
 
+        // =====================================
         // RIGHT BUTTONS
-        JPanel rightButtons = new JPanel(new GridLayout(4, 1, 10, 10));
+        // =====================================
+        JPanel rightButtons
+                = new JPanel(new GridLayout(4, 1, 10, 10));
 
-        JButton cancelBtn = createRightButton("Hủy đơn");
-        JButton removeBtn = createRightButton("Xóa món");
-        JButton addBtn = createRightButton("Thêm vào");
-        JButton paymentBtn = createRightButton("Thanh toán");
+        JButton cancelBtn = createRightButton(
+                "Hủy đơn",
+                "/images/cancel.png"
+        );
 
-        // =========================
+        JButton removeBtn = createRightButton(
+                "Xóa món",
+                "/images/delete.png"
+        );
+
+        JButton addBtn = createRightButton(
+                "Thêm vào",
+                "/images/add.png"
+        );
+
+        JButton paymentBtn = createRightButton(
+                "Thanh toán",
+                "/images/payment.png"
+        );
+
+        // =====================================
         // ADD TO BILL
-        // =========================
+        // =====================================
         addBtn.addActionListener(e -> {
 
             if (selectedDrink.isEmpty()) {
@@ -183,42 +229,50 @@ public class DrinkOrderPanel extends JPanel {
 
             if (!selectedToppings.isEmpty()) {
 
-                toppingText
-                        = " + "
-                        + String.join(", ", selectedToppings);
+                toppingText =
+                        " + "
+                                + String.join(
+                                ", ",
+                                selectedToppings
+                        );
             }
 
-            String fullName
-                    = selectedDrink
-                    + " + " + selectedSize
-                    + " + " + selectedSugar
-                    + " + " + selectedIce
-                    + toppingText;
+            String fullName =
+                    selectedDrink
+                            + " + " + selectedSize
+                            + " + " + selectedSugar
+                            + " + " + selectedIce
+                            + toppingText;
 
-            // CALCULATE TOPPING PRICE
             int toppingTotal = 0;
 
             for (String topping : selectedToppings) {
 
-                toppingTotal += toppingPrices.getOrDefault(topping, 0);
+                toppingTotal +=
+                        toppingPrices.getOrDefault(
+                                topping,
+                                0
+                        );
             }
 
-            int finalPrice = selectedPrice + toppingTotal;
+            int finalPrice =
+                    selectedPrice + toppingTotal;
 
             tableModel.addRow(new Object[]{
-                tableModel.getRowCount() + 1,
-                fullName,
-                finalPrice + " VND",
-                "-",
-                1,
-                "+",
-                finalPrice + " VND"
+
+                    tableModel.getRowCount() + 1,
+                    fullName,
+                    finalPrice + " VND",
+                    "-",
+                    1,
+                    "+",
+                    finalPrice + " VND"
             });
         });
 
-        // =========================
+        // =====================================
         // REMOVE
-        // =========================
+        // =====================================
         removeBtn.addActionListener(e -> {
 
             int row = billTable.getSelectedRow();
@@ -231,17 +285,17 @@ public class DrinkOrderPanel extends JPanel {
             }
         });
 
-        // =========================
+        // =====================================
         // CANCEL
-        // =========================
+        // =====================================
         cancelBtn.addActionListener(e -> {
 
             tableModel.setRowCount(0);
         });
 
-        // =========================
+        // =====================================
         // PAYMENT
-        // =========================
+        // =====================================
         paymentBtn.addActionListener(e -> {
 
             if (tableModel.getRowCount() == 0) {
@@ -258,31 +312,40 @@ public class DrinkOrderPanel extends JPanel {
                     BillIdGenerator.generateId()
             );
 
-            for (int i = 0; i < tableModel.getRowCount(); i++) {
+            for (int i = 0;
+                 i < tableModel.getRowCount();
+                 i++) {
 
-                String name
-                        = tableModel.getValueAt(i, 1).toString();
+                String name =
+                        tableModel.getValueAt(i, 1)
+                                .toString();
 
-                int quantity
-                        = Integer.parseInt(
-                                tableModel.getValueAt(i, 4).toString()
+                int quantity =
+                        Integer.parseInt(
+                                tableModel.getValueAt(i, 4)
+                                        .toString()
                         );
 
-                String priceText
-                        = tableModel.getValueAt(i, 2)
+                String priceText =
+                        tableModel.getValueAt(i, 2)
                                 .toString()
                                 .replace(" VND", "");
 
-                int price = Integer.parseInt(priceText);
+                int price =
+                        Integer.parseInt(priceText);
 
-                BillItem item
-                        = new BillItem(name, quantity, price);
+                BillItem item =
+                        new BillItem(
+                                name,
+                                quantity,
+                                price
+                        );
 
                 bill.addItem(item);
 
-                // ======================
-                // USE INGREDIENT
-                // ======================
+                // =====================================
+                // TRÀ + SỮA
+                // =====================================
                 InventoryRepository.useIngredient(
                         "tra",
                         200 * quantity
@@ -293,16 +356,63 @@ public class DrinkOrderPanel extends JPanel {
                         150 * quantity
                 );
 
-                InventoryRepository.useIngredient(
-                        "duong",
-                        50 * quantity
-                );
+                // =====================================
+                // ĐƯỜNG
+                // =====================================
+                if (!name.contains("0%")) {
 
-                InventoryRepository.useIngredient(
-                        "da",
-                        100 * quantity
-                );
+                    int sugarAmount = 50;
 
+                    if (name.contains("30%")) {
+                        sugarAmount = 15;
+                    }
+
+                    else if (name.contains("50%")) {
+                        sugarAmount = 25;
+                    }
+
+                    else if (name.contains("70%")) {
+                        sugarAmount = 35;
+                    }
+
+                    else if (name.contains("100%")) {
+                        sugarAmount = 50;
+                    }
+
+                    InventoryRepository.useIngredient(
+                            "duong",
+                            sugarAmount * quantity
+                    );
+                }
+
+                // =====================================
+                // ĐÁ
+                // =====================================
+                if (!name.contains("Không đá")) {
+
+                    int iceAmount = 100;
+
+                    if (name.contains("Ít đá")) {
+                        iceAmount = 50;
+                    }
+
+                    else if (name.contains("Vừa đá")) {
+                        iceAmount = 100;
+                    }
+
+                    else if (name.contains("Nhiều đá")) {
+                        iceAmount = 150;
+                    }
+
+                    InventoryRepository.useIngredient(
+                            "da",
+                            iceAmount * quantity
+                    );
+                }
+
+                // =====================================
+                // TOPPING
+                // =====================================
                 if (name.contains("Trân châu")) {
 
                     InventoryRepository.useIngredient(
@@ -329,72 +439,194 @@ public class DrinkOrderPanel extends JPanel {
 
                 if (name.contains("Kem cheese")) {
 
-    InventoryRepository.useIngredient(
-            "cheese",
-            30 * quantity
-    );
-}
+                    InventoryRepository.useIngredient(
+                            "cheese",
+                            30 * quantity
+                    );
+                }
+            }
 
-} // đóng for
+            BillStorage.saveBill(bill);
 
-// SAVE BILL
-BillStorage.saveBill(bill);
+            new ReceiptFrame(bill);
 
-// SHOW RECEIPT
-new ReceiptFrame(bill);
+            tableModel.setRowCount(0);
+        });
 
-// CLEAR TABLE
-tableModel.setRowCount(0);
+        rightButtons.add(cancelBtn);
+        rightButtons.add(removeBtn);
+        rightButtons.add(addBtn);
+        rightButtons.add(paymentBtn);
 
-}); // đóng action listener
+        bottomPanel.add(leftMenu, BorderLayout.WEST);
+        bottomPanel.add(centerPanel, BorderLayout.CENTER);
+        bottomPanel.add(rightButtons, BorderLayout.EAST);
 
-rightButtons.add(cancelBtn);
-rightButtons.add(removeBtn);
-rightButtons.add(addBtn);
-rightButtons.add(paymentBtn);
+        add(bottomPanel, BorderLayout.CENTER);
+    }
 
-bottomPanel.add(leftMenu, BorderLayout.WEST);
-bottomPanel.add(centerPanel, BorderLayout.CENTER);
-bottomPanel.add(rightButtons, BorderLayout.EAST);
-
-add(bottomPanel, BorderLayout.CENTER);
-
-} // đóng createBottomPanel()
-
-// ==================================================
-// DRINK MENU
-// ==================================================
-private void showDrinkMenu() {
+    // ==================================================
+    // DRINK MENU
+    // ==================================================
+    private void showDrinkMenu() {
 
         centerPanel.removeAll();
 
-        addDrinkButton("Trà Sữa", 30000);
-        addDrinkButton("Matcha", 35000);
-        addDrinkButton("Socola", 40000);
-        addDrinkButton("Oolong", 32000);
-        addDrinkButton("Dâu", 36000);
-        addDrinkButton("Khoai môn", 38000);
+        addDrinkButton(
+                "Truyền Thống",
+                30000,
+                "/images/traditional.png"
+        );
+
+        addDrinkButton(
+                "Matcha",
+                35000,
+                "/images/matcha.png"
+        );
+
+        addDrinkButton(
+                "Socola",
+                40000,
+                "/images/chocolate.png"
+        );
+
+        addDrinkButton(
+                "Oolong",
+                32000,
+                "/images/oolong.png"
+        );
+
+        addDrinkButton(
+                "Dâu",
+                36000,
+                "/images/strawberry.png"
+        );
+
+        addDrinkButton(
+                "Khoai môn",
+                38000,
+                "/images/taro.png"
+        );
 
         centerPanel.revalidate();
         centerPanel.repaint();
     }
 
-    private void addDrinkButton(String name, int price) {
+    private void addDrinkButton(
+            String name,
+            int price,
+            String imagePath
+    ) {
 
-        JButton btn = new JButton(
-                "<html><center>"
-                + name
-                + "<br>"
-                + price
-                + " VND"
-                + "</center></html>"
+        JButton btn = new JButton();
+
+        btn.setLayout(new BorderLayout());
+
+        btn.setBackground(Color.WHITE);
+
+        btn.setFocusPainted(false);
+
+        btn.setCursor(
+                new Cursor(Cursor.HAND_CURSOR)
         );
 
-        styleBigButton(btn);
+        JPanel wrapper =
+                new JPanel(new BorderLayout());
+
+        wrapper.setOpaque(false);
+
+        wrapper.setBorder(
+                BorderFactory.createEmptyBorder(
+                        15,
+                        15,
+                        15,
+                        15
+                )
+        );
+
+        JPanel textPanel = new JPanel();
+
+        textPanel.setOpaque(false);
+
+        textPanel.setLayout(
+                new BoxLayout(
+                        textPanel,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        JLabel nameLabel =
+                new JLabel(name);
+
+        nameLabel.setFont(
+                new Font("Arial", Font.BOLD, 16)
+        );
+
+        JLabel priceLabel =
+                new JLabel(price + " VND");
+
+        priceLabel.setFont(
+                new Font("Arial", Font.BOLD, 14)
+        );
+
+        textPanel.add(Box.createVerticalGlue());
+        textPanel.add(nameLabel);
+        textPanel.add(Box.createRigidArea(
+                new Dimension(0, 10)
+        ));
+        textPanel.add(priceLabel);
+        textPanel.add(Box.createVerticalGlue());
+
+        JLabel imageLabel = new JLabel();
+
+        try {
+
+            ImageIcon icon =
+                    new ImageIcon(
+                            getClass().getResource(imagePath)
+                    );
+
+            Image img =
+                    icon.getImage().getScaledInstance(
+                            40,
+                            50,
+                            Image.SCALE_SMOOTH
+                    );
+
+            imageLabel.setIcon(
+                    new ImageIcon(img)
+            );
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "Khong load duoc anh: "
+                            + imagePath
+            );
+        }
+
+        JPanel imagePanel =
+                new JPanel(
+                        new FlowLayout(
+                                FlowLayout.RIGHT,
+                                10,
+                                15
+                        )
+                );
+
+        imagePanel.setOpaque(false);
+
+        imagePanel.add(imageLabel);
+
+        wrapper.add(textPanel, BorderLayout.CENTER);
+        wrapper.add(imagePanel, BorderLayout.EAST);
+
+        btn.add(wrapper);
 
         btn.addActionListener(e -> {
 
             selectedDrink = name;
+
             selectedPrice = price;
         });
 
@@ -408,7 +640,11 @@ private void showDrinkMenu() {
 
         centerPanel.removeAll();
 
-        String[] sizes = {"S", "M", "L"};
+        String[] sizes = {
+                "S",
+                "M",
+                "L"
+        };
 
         for (String size : sizes) {
 
@@ -435,11 +671,11 @@ private void showDrinkMenu() {
         centerPanel.removeAll();
 
         String[] sugars = {
-            "0%",
-            "30%",
-            "50%",
-            "70%",
-            "100%"
+                "0%",
+                "30%",
+                "50%",
+                "70%",
+                "100%"
         };
 
         for (String sugar : sugars) {
@@ -467,10 +703,10 @@ private void showDrinkMenu() {
         centerPanel.removeAll();
 
         String[] ices = {
-            "Không đá",
-            "Ít đá",
-            "Vừa đá",
-            "Nhiều đá"
+                "Không đá",
+                "Ít đá",
+                "Vừa đá",
+                "Nhiều đá"
         };
 
         for (String ice : ices) {
@@ -491,63 +727,197 @@ private void showDrinkMenu() {
     }
 
     // ==================================================
-    // TOPPING
-    // ==================================================
-    private void showToppingMenu() {
+// TOPPING
+// ==================================================
+private void showToppingMenu() {
 
-        centerPanel.removeAll();
+    centerPanel.removeAll();
 
-        String[] toppings = {
+    addToppingButton(
             "Trân châu",
+            5000,
+            "/images/pearl.png"
+    );
+
+    addToppingButton(
             "Thạch",
+            7000,
+            "/images/jelly.png"
+    );
+
+    addToppingButton(
             "Pudding",
-            "Kem cheese"
-        };
+            12000,
+            "/images/pudding.png"
+    );
 
-        for (String topping : toppings) {
+    addToppingButton(
+            "Kem cheese",
+            15000,
+            "/images/cheese.png"
+    );
 
-            JToggleButton btn = new JToggleButton(
-                    "<html><center>"
-                    + topping
-                    + "<br>+"
-                    + toppingPrices.get(topping)
-                    + " VND"
-                    + "</center></html>"
+    centerPanel.revalidate();
+    centerPanel.repaint();
+}
+
+// ==================================================
+// TOPPING BUTTON UI
+// ==================================================
+private void addToppingButton(
+        String topping,
+        int price,
+        String imagePath
+) {
+
+    JToggleButton btn = new JToggleButton();
+
+    btn.setLayout(new BorderLayout());
+
+    btn.setBackground(Color.WHITE);
+
+    btn.setFocusPainted(false);
+
+    btn.setCursor(
+            new Cursor(Cursor.HAND_CURSOR)
+    );
+
+    JPanel wrapper =
+            new JPanel(new BorderLayout());
+
+    wrapper.setOpaque(false);
+
+    wrapper.setBorder(
+            BorderFactory.createEmptyBorder(
+                    15,
+                    15,
+                    15,
+                    15
+            )
+    );
+
+    // ============================
+    // TEXT PANEL
+    // ============================
+    JPanel textPanel = new JPanel();
+
+    textPanel.setOpaque(false);
+
+    textPanel.setLayout(
+            new BoxLayout(
+                    textPanel,
+                    BoxLayout.Y_AXIS
+            )
+    );
+
+    JLabel nameLabel =
+            new JLabel(topping);
+
+    nameLabel.setFont(
+            new Font("Arial", Font.BOLD, 16)
+    );
+
+    JLabel priceLabel =
+            new JLabel("+" + price + " VND");
+
+    priceLabel.setFont(
+            new Font("Arial", Font.BOLD, 14)
+    );
+
+    textPanel.add(Box.createVerticalGlue());
+    textPanel.add(nameLabel);
+    textPanel.add(Box.createRigidArea(
+            new Dimension(0, 10)
+    ));
+    textPanel.add(priceLabel);
+    textPanel.add(Box.createVerticalGlue());
+
+    // ============================
+    // IMAGE
+    // ============================
+    JLabel imageLabel = new JLabel();
+
+    try {
+
+        ImageIcon icon =
+                new ImageIcon(
+                        getClass().getResource(imagePath)
+                );
+
+        Image img =
+                icon.getImage().getScaledInstance(
+                        40,
+                        50,
+                        Image.SCALE_SMOOTH
+                );
+
+        imageLabel.setIcon(
+                new ImageIcon(img)
+        );
+
+    } catch (Exception e) {
+
+        System.out.println(
+                "Khong load duoc anh topping: "
+                        + imagePath
+        );
+    }
+
+    JPanel imagePanel =
+            new JPanel(
+                    new FlowLayout(
+                            FlowLayout.RIGHT,
+                            40,
+                            60
+                    )
             );
 
-            btn.setFont(new Font("Arial", Font.BOLD, 18));
+    imagePanel.setOpaque(false);
 
-            btn.setFocusPainted(false);
+    imagePanel.add(imageLabel);
 
-            btn.addActionListener(e -> {
+    wrapper.add(textPanel, BorderLayout.CENTER);
+    wrapper.add(imagePanel, BorderLayout.EAST);
 
-                if (btn.isSelected()) {
+    btn.add(wrapper);
 
-                    if (!selectedToppings.contains(topping)) {
-                        selectedToppings.add(topping);
-                    }
+    // ============================
+    // SELECT TOPPING
+    // ============================
+    btn.addActionListener(e -> {
 
-                } else {
+        if (btn.isSelected()) {
 
-                    selectedToppings.remove(topping);
-                }
-            });
+            if (!selectedToppings.contains(
+                    topping
+            )) {
 
-            centerPanel.add(btn);
+                selectedToppings.add(topping);
+            }
+
+        } else {
+
+            selectedToppings.remove(topping);
         }
+    });
 
-        centerPanel.revalidate();
-        centerPanel.repaint();
-    }
+    centerPanel.add(btn);
+}
 
     // ==================================================
     // REFRESH STT
     // ==================================================
     private void refreshSTT() {
 
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
+        for (int i = 0;
+             i < tableModel.getRowCount();
+             i++) {
 
-            tableModel.setValueAt(i + 1, i, 0);
+            tableModel.setValueAt(
+                    i + 1,
+                    i,
+                    0
+            );
         }
     }
 
@@ -558,39 +928,89 @@ private void showDrinkMenu() {
 
         JButton btn = new JButton(text);
 
-        btn.setFont(new Font("Arial", Font.BOLD, 18));
+        btn.setFont(
+                new Font("Arial", Font.BOLD, 18)
+        );
 
         btn.setFocusPainted(false);
 
         return btn;
     }
 
-    private JButton createRightButton(String text) {
+    private JButton createRightButton(
+            String text,
+            String iconPath
+    ) {
 
         JButton btn = new JButton(text);
 
-        btn.setFont(new Font("Arial", Font.BOLD, 20));
+        btn.setFont(
+                new Font("Arial", Font.BOLD, 18)
+        );
 
         btn.setFocusPainted(false);
+
+        btn.setHorizontalAlignment(
+                SwingConstants.LEFT
+        );
+
+        btn.setIconTextGap(15);
+
+        btn.setBackground(Color.WHITE);
+
+        try {
+
+            ImageIcon icon =
+                    new ImageIcon(
+                            getClass().getResource(iconPath)
+                    );
+
+            Image img =
+                    icon.getImage().getScaledInstance(
+                            28,
+                            28,
+                            Image.SCALE_SMOOTH
+                    );
+
+            btn.setIcon(new ImageIcon(img));
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "Khong load duoc icon: "
+                            + iconPath
+            );
+        }
 
         return btn;
     }
 
-    private void styleBigButton(AbstractButton btn) {
+    private void styleBigButton(
+            AbstractButton btn
+    ) {
 
-        btn.setFont(new Font("Arial", Font.BOLD, 22));
+        btn.setFont(
+                new Font("Arial", Font.BOLD, 22)
+        );
 
         btn.setFocusPainted(false);
 
-        btn.setPreferredSize(new Dimension(180, 100));
+        btn.setBackground(Color.WHITE);
+
+        btn.setPreferredSize(
+                new Dimension(180, 100)
+        );
     }
 
     // ==================================================
     // BUTTON RENDERER
     // ==================================================
-    class ButtonRenderer extends JButton implements TableCellRenderer {
+    class ButtonRenderer
+            extends JButton
+            implements TableCellRenderer {
 
         public ButtonRenderer() {
+
             setOpaque(true);
         }
 
@@ -601,7 +1021,8 @@ private void showDrinkMenu() {
                 boolean isSelected,
                 boolean hasFocus,
                 int row,
-                int column) {
+                int column
+        ) {
 
             setText(value.toString());
 
@@ -623,7 +1044,9 @@ private void showDrinkMenu() {
         private int row;
         private int column;
 
-        public ButtonEditor(JCheckBox checkBox) {
+        public ButtonEditor(
+                JCheckBox checkBox
+        ) {
 
             super(checkBox);
 
@@ -631,7 +1054,9 @@ private void showDrinkMenu() {
 
             button.setOpaque(true);
 
-            button.addActionListener(e -> fireEditingStopped());
+            button.addActionListener(
+                    e -> fireEditingStopped()
+            );
         }
 
         @Override
@@ -640,7 +1065,8 @@ private void showDrinkMenu() {
                 Object value,
                 boolean isSelected,
                 int row,
-                int column) {
+                int column
+        ) {
 
             this.row = row;
             this.column = column;
@@ -659,17 +1085,24 @@ private void showDrinkMenu() {
 
             if (clicked) {
 
-                int quantity
-                        = Integer.parseInt(
-                                tableModel.getValueAt(row, 4).toString()
+                int quantity =
+                        Integer.parseInt(
+                                tableModel.getValueAt(
+                                        row,
+                                        4
+                                ).toString()
                         );
 
-                String priceText
-                        = tableModel.getValueAt(row, 2)
+                String priceText =
+                        tableModel.getValueAt(
+                                        row,
+                                        2
+                                )
                                 .toString()
                                 .replace(" VND", "");
 
-                int price = Integer.parseInt(priceText);
+                int price =
+                        Integer.parseInt(priceText);
 
                 if (column == 5) {
                     quantity++;
@@ -679,7 +1112,11 @@ private void showDrinkMenu() {
                     quantity--;
                 }
 
-                tableModel.setValueAt(quantity, row, 4);
+                tableModel.setValueAt(
+                        quantity,
+                        row,
+                        4
+                );
 
                 int total = quantity * price;
 
