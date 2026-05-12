@@ -133,25 +133,60 @@ public class InventoryPanel extends JPanel {
     // =====================================================
     private void loadInventory() {
 
-        model.setRowCount(0);
+    model.setRowCount(0);
 
-        // LẤY MAP TỪ REPOSITORY
-        Map<String, Integer> stock =
-                repo.getStock();
+    Map<String, Integer> stock = repo.getStock();
 
-        int stt = 1;
+    int stt = 1;
 
-        for (String name : stock.keySet()) {
+    for (String name : stock.keySet()) {
 
-            model.addRow(new Object[]{
+        String unit = getUnit(name);
 
-                stt++,
+        model.addRow(new Object[]{
 
-                name.toUpperCase(),
+            stt++,
 
-                stock.get(name) + " ml"
+            name.toUpperCase(),
 
-            });
-        }
+            stock.get(name) + " " + unit
+        });
     }
+}
+
+
+private String getUnit(String ingredient) {
+
+    ingredient = ingredient.toUpperCase();
+
+    switch (ingredient) {
+
+        case "DA":
+            return "g";
+
+        case "DUONG":
+            return "g";
+
+        case "TRAN CHAU":
+            return "g";
+
+        case "THACH":
+            return "g";
+
+        case "PUDDING":
+            return "g";
+
+        case "CHEESE":
+            return "g";
+
+        case "TRA":
+            return "ml";
+
+        case "SUA":
+            return "ml";
+
+        default:
+            return "";
+    }
+}
 }

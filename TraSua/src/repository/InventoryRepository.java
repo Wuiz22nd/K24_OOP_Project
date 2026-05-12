@@ -15,11 +15,20 @@ public class InventoryRepository {
     
     public static void useIngredient(String name, int amount) {
 
+    name = name.toLowerCase();
+
     if (stock.containsKey(name)) {
 
         int current = stock.get(name);
 
-        stock.put(name, current - amount);
+        current -= amount;
+
+        // KHÔNG CHO ÂM
+        if (current < 0) {
+            current = 0;
+        }
+
+        stock.put(name, current);
     }
 }
 

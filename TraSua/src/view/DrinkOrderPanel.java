@@ -359,31 +359,34 @@ public class DrinkOrderPanel extends JPanel {
                 // =====================================
                 // ĐƯỜNG
                 // =====================================
-                if (!name.contains("0%")) {
+                int sugarAmount = 0;
 
-                    int sugarAmount = 50;
+                if (name.contains("+ 30% +")) {
 
-                    if (name.contains("30%")) {
-                        sugarAmount = 15;
-                    }
-
-                    else if (name.contains("50%")) {
-                        sugarAmount = 25;
-                    }
-
-                    else if (name.contains("70%")) {
-                        sugarAmount = 35;
-                    }
-
-                    else if (name.contains("100%")) {
-                        sugarAmount = 50;
-                    }
-
-                    InventoryRepository.useIngredient(
-                            "duong",
-                            sugarAmount * quantity
-                    );
+                    sugarAmount = 15;
                 }
+
+                else if (name.contains("+ 50% +")) {
+
+                    sugarAmount = 25;
+                }
+
+                else if (name.contains("+ 70% +")) {
+
+                    sugarAmount = 35;
+                }
+
+                else if (name.contains("+ 100% +")) {
+
+                    sugarAmount = 50;
+                }
+
+                // 0% thì sugarAmount vẫn = 0
+
+                InventoryRepository.useIngredient(
+                        "duong",
+                        sugarAmount * quantity
+                );
 
                 // =====================================
                 // ĐÁ
