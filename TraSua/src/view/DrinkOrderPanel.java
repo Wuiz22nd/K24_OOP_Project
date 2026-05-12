@@ -1,10 +1,17 @@
 package view;
 
+import model.Bill;
+import model.BillItem;
+import model.BillStorage;
+import model.IngredientStock;
+import service.BillIdGenerator;
+
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DrinkOrderPanel extends JPanel {
 
@@ -13,18 +20,24 @@ public class DrinkOrderPanel extends JPanel {
 
     private JPanel centerPanel;
 
-    private String selectedCategory = "Danh sách món";
-
     private String selectedDrink = "";
     private int selectedPrice = 0;
 
     private String selectedSize = "M";
     private String selectedSugar = "100%";
-    private String selectedIce = "100%";
+    private String selectedIce = "Vừa đá";
 
     private java.util.List<String> selectedToppings = new ArrayList<>();
 
+    // TOPPING PRICE
+    private final Map<String, Integer> toppingPrices = new HashMap<>();
+
     public DrinkOrderPanel() {
+
+        toppingPrices.put("Trân châu", 5000);
+        toppingPrices.put("Thạch", 7000);
+        toppingPrices.put("Pudding", 12000);
+        toppingPrices.put("Kem cheese", 15000);
 
         setLayout(new BorderLayout());
 
@@ -34,9 +47,9 @@ public class DrinkOrderPanel extends JPanel {
         showDrinkMenu();
     }
 
-    // ==========================
+    // ==================================================
     // TOP BILL
-    // ==========================
+    // ==================================================
     private void createTopBillPanel() {
 
         String[] columns = {
@@ -50,6 +63,7 @@ public class DrinkOrderPanel extends JPanel {
         };
 
         tableModel = new DefaultTableModel(columns, 0) {
+
             @Override
             public boolean isCellEditable(int row, int column) {
                 return column == 3 || column == 5;
@@ -59,16 +73,23 @@ public class DrinkOrderPanel extends JPanel {
         billTable = new JTable(tableModel);
 
         billTable.setRowHeight(45);
-        billTable.setFont(new Font("Arial", Font.PLAIN, 18));
-        billTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 18));
 
-        // button renderer
+        billTable.setFont(new Font("Arial", Font.PLAIN, 17));
+
+        billTable.getTableHeader().setFont(
+                new Font("Arial", Font.BOLD, 18)
+        );
+
         billTable.getColumn("-").setCellRenderer(new ButtonRenderer());
         billTable.getColumn("+").setCellRenderer(new ButtonRenderer());
 
-        // button editor
-        billTable.getColumn("-").setCellEditor(new ButtonEditor(new JCheckBox()));
-        billTable.getColumn("+").setCellEditor(new ButtonEditor(new JCheckBox()));
+        billTable.getColumn("-").setCellEditor(
+                new ButtonEditor(new JCheckBox())
+        );
+
+        billTable.getColumn("+").setCellEditor(
+                new ButtonEditor(new JCheckBox())
+        );
 
         JScrollPane scrollPane = new JScrollPane(billTable);
 
@@ -77,15 +98,15 @@ public class DrinkOrderPanel extends JPanel {
         add(scrollPane, BorderLayout.NORTH);
     }
 
-    // ==========================
-    // BOTTOM AREA
-    // ==========================
+    // ==================================================
+    // BOTTOM PANEL
+    // ==================================================
     private void createBottomPanel() {
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
 
         // LEFT MENU
-        JPanel leftMenu = new JPanel(new GridLayout(5, 1, 5, 5));
+        JPanel leftMenu = new JPanel(new GridLayout(5, 1, 8, 8));
 
         String[] menus = {
             "Danh sách món",
@@ -97,13 +118,9 @@ public class DrinkOrderPanel extends JPanel {
 
         for (String menu : menus) {
 
-            JButton btn = new JButton(menu);
-
-            btn.setFont(new Font("Arial", Font.BOLD, 20));
+            JButton btn = createMenuButton(menu);
 
             btn.addActionListener(e -> {
-
-                selectedCategory = menu;
 
                 switch (menu) {
 
@@ -135,28 +152,29 @@ public class DrinkOrderPanel extends JPanel {
         // CENTER PANEL
         centerPanel = new JPanel(new GridLayout(2, 3, 15, 15));
 
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(
+                15, 15, 15, 15
+        ));
+
         // RIGHT BUTTONS
         JPanel rightButtons = new JPanel(new GridLayout(4, 1, 10, 10));
 
-        JButton cancelBtn = new JButton("Hủy đơn");
-        JButton removeBtn = new JButton("Xóa món");
-        JButton addBtn = new JButton("Thêm vào");
-        JButton paymentBtn = new JButton("Thanh toán");
+        JButton cancelBtn = createRightButton("Hủy đơn");
+        JButton removeBtn = createRightButton("Xóa món");
+        JButton addBtn = createRightButton("Thêm vào");
+        JButton paymentBtn = createRightButton("Thanh toán");
 
-        Font btnFont = new Font("Arial", Font.BOLD, 22);
-
-        cancelBtn.setFont(btnFont);
-        removeBtn.setFont(btnFont);
-        addBtn.setFont(btnFont);
-        paymentBtn.setFont(btnFont);
-
+        // =========================
         // ADD TO BILL
+        // =========================
         addBtn.addActionListener(e -> {
 
             if (selectedDrink.isEmpty()) {
 
-                JOptionPane.showMessageDialog(this,
-                        "Vui lòng chọn món!");
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Vui lòng chọn món!"
+                );
 
                 return;
             }
@@ -177,18 +195,30 @@ public class DrinkOrderPanel extends JPanel {
                     + " + " + selectedIce
                     + toppingText;
 
+            // CALCULATE TOPPING PRICE
+            int toppingTotal = 0;
+
+            for (String topping : selectedToppings) {
+
+                toppingTotal += toppingPrices.getOrDefault(topping, 0);
+            }
+
+            int finalPrice = selectedPrice + toppingTotal;
+
             tableModel.addRow(new Object[]{
                 tableModel.getRowCount() + 1,
                 fullName,
-                selectedPrice + " VND",
+                finalPrice + " VND",
                 "-",
                 1,
                 "+",
-                selectedPrice + " VND"
+                finalPrice + " VND"
             });
         });
 
+        // =========================
         // REMOVE
+        // =========================
         removeBtn.addActionListener(e -> {
 
             int row = billTable.getSelectedRow();
@@ -201,8 +231,118 @@ public class DrinkOrderPanel extends JPanel {
             }
         });
 
+        // =========================
         // CANCEL
+        // =========================
         cancelBtn.addActionListener(e -> {
+
+            tableModel.setRowCount(0);
+        });
+
+        // =========================
+        // PAYMENT
+        // =========================
+        paymentBtn.addActionListener(e -> {
+
+            if (tableModel.getRowCount() == 0) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Hóa đơn trống!"
+                );
+
+                return;
+            }
+
+            Bill bill = new Bill(
+                    BillIdGenerator.generateId()
+            );
+
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+
+                String name =
+                        tableModel.getValueAt(i, 1).toString();
+
+                int quantity =
+                        Integer.parseInt(
+                                tableModel.getValueAt(i, 4).toString()
+                        );
+
+                String priceText =
+                        tableModel.getValueAt(i, 2)
+                                .toString()
+                                .replace(" VND", "");
+
+                int price = Integer.parseInt(priceText);
+
+                BillItem item =
+                        new BillItem(name, quantity, price);
+
+                bill.addItem(item);
+
+                // ======================
+                // USE INGREDIENT
+                // ======================
+                IngredientStock.useIngredient(
+                        "tra",
+                        200 * quantity
+                );
+
+                IngredientStock.useIngredient(
+                        "sua",
+                        150 * quantity
+                );
+
+                IngredientStock.useIngredient(
+                        "duong",
+                        50 * quantity
+                );
+
+                IngredientStock.useIngredient(
+                        "da",
+                        100 * quantity
+                );
+
+                if (name.contains("Trân châu")) {
+
+                    IngredientStock.useIngredient(
+                            "tran chau",
+                            30 * quantity
+                    );
+                }
+
+                if (name.contains("Thạch")) {
+
+                    IngredientStock.useIngredient(
+                            "thach",
+                            30 * quantity
+                    );
+                }
+
+                if (name.contains("Pudding")) {
+
+                    IngredientStock.useIngredient(
+                            "pudding",
+                            30 * quantity
+                    );
+                }
+
+                if (name.contains("Kem cheese")) {
+
+                    IngredientStock.useIngredient(
+                            "cheese",
+                            30 * quantity
+                    );
+                }
+            }
+
+            // SAVE BILL
+            BillStorage.saveBill(bill);
+
+            // SHOW RECEIPT
+            new ReceiptFrame(bill);
+
+            // CLEAR TABLE
             tableModel.setRowCount(0);
         });
 
@@ -218,9 +358,9 @@ public class DrinkOrderPanel extends JPanel {
         add(bottomPanel, BorderLayout.CENTER);
     }
 
-    // ==========================
+    // ==================================================
     // DRINK MENU
-    // ==========================
+    // ==================================================
     private void showDrinkMenu() {
 
         centerPanel.removeAll();
@@ -243,10 +383,11 @@ public class DrinkOrderPanel extends JPanel {
                 + name
                 + "<br>"
                 + price
-                + " VND</center></html>"
+                + " VND"
+                + "</center></html>"
         );
 
-        btn.setFont(new Font("Arial", Font.BOLD, 22));
+        styleBigButton(btn);
 
         btn.addActionListener(e -> {
 
@@ -257,23 +398,23 @@ public class DrinkOrderPanel extends JPanel {
         centerPanel.add(btn);
     }
 
-    // ==========================
+    // ==================================================
     // SIZE
-    // ==========================
+    // ==================================================
     private void showSizeMenu() {
 
         centerPanel.removeAll();
 
         String[] sizes = {"S", "M", "L"};
 
-        for (String s : sizes) {
+        for (String size : sizes) {
 
-            JButton btn = new JButton(s);
+            JButton btn = new JButton(size);
 
-            btn.setFont(new Font("Arial", Font.BOLD, 28));
+            styleBigButton(btn);
 
             btn.addActionListener(e -> {
-                selectedSize = s;
+                selectedSize = size;
             });
 
             centerPanel.add(btn);
@@ -283,9 +424,9 @@ public class DrinkOrderPanel extends JPanel {
         centerPanel.repaint();
     }
 
-    // ==========================
+    // ==================================================
     // SUGAR
-    // ==========================
+    // ==================================================
     private void showSugarMenu() {
 
         centerPanel.removeAll();
@@ -302,7 +443,7 @@ public class DrinkOrderPanel extends JPanel {
 
             JButton btn = new JButton(sugar);
 
-            btn.setFont(new Font("Arial", Font.BOLD, 24));
+            styleBigButton(btn);
 
             btn.addActionListener(e -> {
                 selectedSugar = sugar;
@@ -315,9 +456,9 @@ public class DrinkOrderPanel extends JPanel {
         centerPanel.repaint();
     }
 
-    // ==========================
+    // ==================================================
     // ICE
-    // ==========================
+    // ==================================================
     private void showIceMenu() {
 
         centerPanel.removeAll();
@@ -325,15 +466,15 @@ public class DrinkOrderPanel extends JPanel {
         String[] ices = {
             "Không đá",
             "Ít đá",
-            "50%",
-            "100%"
+            "Vừa đá",
+            "Nhiều đá"
         };
 
         for (String ice : ices) {
 
             JButton btn = new JButton(ice);
 
-            btn.setFont(new Font("Arial", Font.BOLD, 24));
+            styleBigButton(btn);
 
             btn.addActionListener(e -> {
                 selectedIce = ice;
@@ -346,9 +487,9 @@ public class DrinkOrderPanel extends JPanel {
         centerPanel.repaint();
     }
 
-    // ==========================
+    // ==================================================
     // TOPPING
-    // ==========================
+    // ==================================================
     private void showToppingMenu() {
 
         centerPanel.removeAll();
@@ -362,9 +503,18 @@ public class DrinkOrderPanel extends JPanel {
 
         for (String topping : toppings) {
 
-            JToggleButton btn = new JToggleButton(topping);
+            JToggleButton btn = new JToggleButton(
+                    "<html><center>"
+                    + topping
+                    + "<br>+"
+                    + toppingPrices.get(topping)
+                    + " VND"
+                    + "</center></html>"
+            );
 
-            btn.setFont(new Font("Arial", Font.BOLD, 20));
+            btn.setFont(new Font("Arial", Font.BOLD, 18));
+
+            btn.setFocusPainted(false);
 
             btn.addActionListener(e -> {
 
@@ -387,9 +537,9 @@ public class DrinkOrderPanel extends JPanel {
         centerPanel.repaint();
     }
 
-    // ==========================
+    // ==================================================
     // REFRESH STT
-    // ==========================
+    // ==================================================
     private void refreshSTT() {
 
         for (int i = 0; i < tableModel.getRowCount(); i++) {
@@ -398,9 +548,43 @@ public class DrinkOrderPanel extends JPanel {
         }
     }
 
-    // ==========================
+    // ==================================================
+    // STYLE
+    // ==================================================
+    private JButton createMenuButton(String text) {
+
+        JButton btn = new JButton(text);
+
+        btn.setFont(new Font("Arial", Font.BOLD, 18));
+
+        btn.setFocusPainted(false);
+
+        return btn;
+    }
+
+    private JButton createRightButton(String text) {
+
+        JButton btn = new JButton(text);
+
+        btn.setFont(new Font("Arial", Font.BOLD, 20));
+
+        btn.setFocusPainted(false);
+
+        return btn;
+    }
+
+    private void styleBigButton(AbstractButton btn) {
+
+        btn.setFont(new Font("Arial", Font.BOLD, 22));
+
+        btn.setFocusPainted(false);
+
+        btn.setPreferredSize(new Dimension(180, 100));
+    }
+
+    // ==================================================
     // BUTTON RENDERER
-    // ==========================
+    // ==================================================
     class ButtonRenderer extends JButton implements TableCellRenderer {
 
         public ButtonRenderer() {
@@ -422,9 +606,9 @@ public class DrinkOrderPanel extends JPanel {
         }
     }
 
-    // ==========================
+    // ==================================================
     // BUTTON EDITOR
-    // ==========================
+    // ==================================================
     class ButtonEditor extends DefaultCellEditor {
 
         private JButton button;
@@ -496,7 +680,11 @@ public class DrinkOrderPanel extends JPanel {
 
                 int total = quantity * price;
 
-                tableModel.setValueAt(total + " VND", row, 6);
+                tableModel.setValueAt(
+                        total + " VND",
+                        row,
+                        6
+                );
             }
 
             clicked = false;
