@@ -10,68 +10,243 @@ package view;
  */
 import service.AuthService;
 import service.OrderService;
+
 import javax.swing.*;
 import java.awt.*;
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class MainFrame extends JFrame {
 
     private final AuthService authService;
     private final OrderService orderService;
-    private DrinkOrderPanel drinkOrderPanel;
 
-    public MainFrame(AuthService authService, OrderService orderService) {
+    // CARD LAYOUT
+    private CardLayout cardLayout;
+    private JPanel contentPanel;
+
+    // COLORS
+    private final Color SIDEBAR_COLOR = new Color(0, 128, 128);
+    private final Color BUTTON_COLOR = new Color(0, 140, 140);
+
+    public MainFrame(
+            AuthService authService,
+            OrderService orderService
+    ) {
+
         this.authService = authService;
         this.orderService = orderService;
+
         initUI();
     }
 
+    // =====================================================
+    // UI
+    // =====================================================
     private void initUI() {
-        setTitle("BUBBLE TEA POS - Quản Lý Bán Hàng");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1250, 720);
+
+        setTitle("Bubble Tea POS");
+        setSize(1400, 800);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(new Color(0, 128, 128));
+        setLayout(new BorderLayout());
 
-        // Top Bar
+        // =========================
+        // TOP BAR
+        // =========================
         JPanel topBar = new JPanel(new BorderLayout());
-        topBar.setBackground(new Color(0, 110, 100));
+
+        topBar.setBackground(new Color(0, 100, 100));
         topBar.setPreferredSize(new Dimension(0, 60));
 
-        JLabel title = new JLabel("   BUBBLE TEA POS - QUẢN LÝ BÁN HÀNG", SwingConstants.LEFT);
-        title.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        title.setForeground(Color.WHITE);
+        JLabel title = new JLabel(
+                "  BUBBLE TEA POS SYSTEM"
+        );
 
-        JLabel userLabel = new JLabel("Nhân viên: " + authService.getCurrentUser().getUsername());
-        userLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+            title.setForeground(Color.BLACK);
+
+        JLabel userLabel = new JLabel(
+                "Nhân viên: "
+                + authService.getCurrentUser().getUsername()
+                + "   "
+        );
+
+        userLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         userLabel.setForeground(Color.WHITE);
 
-        JButton btnLogout = new JButton("Đăng xuất");
-        btnLogout.setBackground(Color.WHITE);
-        btnLogout.setForeground(Color.BLACK);
+        topBar.add(title, BorderLayout.WEST);
+        topBar.add(userLabel, BorderLayout.EAST);
+
+        add(topBar, BorderLayout.NORTH);
+
+        // =========================
+        // SIDEBAR
+        // =========================
+        JPanel sidebar = new JPanel();
+
+        sidebar.setBackground(SIDEBAR_COLOR);
+
+        sidebar.setPreferredSize(new Dimension(230, 0));
+
+        sidebar.setLayout(
+                new GridLayout(8, 1, 10, 10)
+        );
+
+        sidebar.setBorder(
+                BorderFactory.createEmptyBorder(
+                        20,
+                        15,
+                        20,
+                        15
+                )
+        );
+
+        JButton btnTea = createSidebarButton(
+                "TẠO TRÀ SỮA",
+                "/images/milk.png"
+        );
+
+        JButton btnInventory = createSidebarButton(
+                "KHO",
+                "/images/inventory.png"
+        );
+
+        JButton btnBill = createSidebarButton(
+                "HÓA ĐƠN",
+                "/images/bill.png"
+        );
+
+        JButton btnLogout = createSidebarButton(
+                "ĐĂNG XUẤT",
+                "/images/logout.png"
+        );
+        sidebar.add(btnTea);
+        sidebar.add(btnInventory);
+        sidebar.add(btnBill);
+
+        sidebar.add(new JLabel());
+
+        sidebar.add(btnLogout);
+
+        add(sidebar, BorderLayout.WEST);
+
+        // =========================
+        // CONTENT PANEL
+        // =========================
+        cardLayout = new CardLayout();
+
+        contentPanel = new JPanel(cardLayout);
+
+        // PANELS
+        DrinkOrderPanel drinkPanel =
+                new DrinkOrderPanel();
+
+        InventoryPanel inventoryPanel =
+                new InventoryPanel();
+
+        BillPanel billPanel =
+                new BillPanel();
+
+        contentPanel.add(drinkPanel, "TEA");
+        contentPanel.add(inventoryPanel, "INVENTORY");
+        contentPanel.add(billPanel, "BILL");
+
+        add(contentPanel, BorderLayout.CENTER);
+
+        // =========================
+        // EVENTS
+        // =========================
+        btnTea.addActionListener(e -> {
+
+            cardLayout.show(contentPanel, "TEA");
+        });
+
+        btnInventory.addActionListener(e -> {
+
+            cardLayout.show(contentPanel, "INVENTORY");
+        });
+
+        btnBill.addActionListener(e -> {
+
+            cardLayout.show(contentPanel, "BILL");
+        });
+
         btnLogout.addActionListener(e -> logout());
 
-        topBar.add(title, BorderLayout.WEST);
-        topBar.add(userLabel, BorderLayout.CENTER);
-        topBar.add(btnLogout, BorderLayout.EAST);
-
-        // Drink Order Panel
-        drinkOrderPanel = new DrinkOrderPanel();
-
-        mainPanel.add(topBar, BorderLayout.NORTH);
-        mainPanel.add(new DrinkOrderPanel(), BorderLayout.CENTER);
-
-        add(mainPanel);
+        // DEFAULT PAGE
+        cardLayout.show(contentPanel, "TEA");
     }
 
+    // =====================================================
+    // SIDEBAR BUTTON
+    // =====================================================
+    private JButton createSidebarButton(
+        String text,
+        String iconPath
+) {
+
+    JButton btn = new JButton(text);
+
+    // LOAD ICON
+    ImageIcon icon = new ImageIcon(
+            getClass().getResource(iconPath)
+    );
+
+    Image img = icon.getImage().getScaledInstance(
+            28,
+            28,
+            Image.SCALE_SMOOTH
+    );
+
+    btn.setIcon(new ImageIcon(img));
+
+    // STYLE
+    btn.setFont(
+            new Font("Segoe UI", Font.BOLD, 18)
+    );
+
+    btn.setBackground(BUTTON_COLOR);
+
+    btn.setForeground(Color.BLACK);
+
+    btn.setFocusPainted(false);
+
+    btn.setHorizontalAlignment(SwingConstants.LEFT);
+
+    btn.setIconTextGap(15);
+
+    btn.setBorder(
+            BorderFactory.createEmptyBorder(
+                    15,
+                    20,
+                    15,
+                    20
+            )
+    );
+
+    return btn;
+}
+    // =====================================================
+    // LOGOUT
+    // =====================================================
     private void logout() {
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Bạn có chắc muốn đăng xuất?", "Đăng xuất", JOptionPane.YES_NO_OPTION);
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Bạn có chắc muốn đăng xuất?",
+                "Đăng xuất",
+                JOptionPane.YES_NO_OPTION
+        );
 
         if (confirm == JOptionPane.YES_OPTION) {
+
             dispose();
-            new LoginFrame(authService).setVisible(true);
+
+            LoginFrame loginFrame =
+                    new LoginFrame(authService);
+
+            loginFrame.setVisible(true);
         }
     }
 }

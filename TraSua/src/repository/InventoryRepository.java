@@ -8,89 +8,175 @@ package repository;
  *
  * @author Minhphat
  */
-import java.io.*;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public class InventoryRepository {
-    private static final String FILE = "inventory.txt";
-    private Map<String, Integer> inventory = new LinkedHashMap<>();
+    
+    public static void useIngredient(String name, int amount) {
 
-    public InventoryRepository() {
-        initDefault();
-        load();
+    if (stock.containsKey(name)) {
+
+        int current = stock.get(name);
+
+        stock.put(name, current - amount);
+    }
+}
+
+    // =====================================================
+    // STATIC INVENTORY
+    // =====================================================
+    // Dùng static để mọi panel / class dùng chung 1 kho
+
+    private static final Map<String, Integer> stock =
+            new HashMap<>();
+
+    // =====================================================
+    // DEFAULT STOCK
+    // =====================================================
+    static {
+
+        stock.put("tra", 5000);
+
+        stock.put("sua", 5000);
+
+        stock.put("duong", 3000);
+
+        stock.put("da", 5000);
+
+        stock.put("tran chau", 2000);
+
+        stock.put("thach", 2000);
+
+        stock.put("pudding", 1500);
+
+        stock.put("cheese", 1500);
     }
 
-    private void initDefault() {
-        if (inventory.isEmpty()) {
-            inventory.put("tra", 10000);
-            inventory.put("sua", 8000);
-            inventory.put("duong", 5000);
-            inventory.put("da", 20000);
-            inventory.put("tran_chau", 5000);
-            inventory.put("kem_cheese", 3000);
-            inventory.put("thach", 4000);
+    // =====================================================
+    // GET STOCK
+    // =====================================================
+    public Map<String, Integer> getStock() {
+
+        return stock;
+    }
+
+    // =====================================================
+    // CHECK ENOUGH INGREDIENT
+    // =====================================================
+    public boolean hasEnough(
+            String ingredient,
+            int quantity
+    ) {
+
+        ingredient = ingredient.toLowerCase();
+
+        return stock.getOrDefault(
+                ingredient,
+                0
+        ) >= quantity;
+    }
+
+    // =====================================================
+    // DEDUCT INVENTORY
+    // =====================================================
+    public void deduct(
+            String ingredient,
+            int quantity
+    ) {
+
+        ingredient = ingredient.toLowerCase();
+
+        int current =
+                stock.getOrDefault(
+                        ingredient,
+                        0
+                );
+
+        current -= quantity;
+
+        // KHÔNG CHO ÂM
+        if (current < 0) {
+            current = 0;
         }
+
+        stock.put(ingredient, current);
     }
 
-    private void load() {
-        File file = new File(FILE);
-        if (!file.exists()) {
-            save();
-            return;
-        }
+    // =====================================================
+    // ADD INVENTORY
+    // =====================================================
+    public void addStock(
+            String ingredient,
+            int quantity
+    ) {
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty()) continue;
-                
-                String[] parts = line.split("=");
-                if (parts.length == 2) {
-                    String name = parts[0].trim();
-                    int qty = Integer.parseInt(parts[1].trim());
-                    inventory.put(name, qty);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ingredient = ingredient.toLowerCase();
+
+        int current =
+                stock.getOrDefault(
+                        ingredient,
+                        0
+                );
+
+        current += quantity;
+
+        stock.put(ingredient, current);
     }
 
-    private void save() {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(FILE))) {
-            for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
-                pw.println(entry.getKey() + "=" + entry.getValue());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public boolean hasEnough(String ingredient, int quantity) {
-        return inventory.getOrDefault(ingredient, 0) >= quantity;
-    }
-
-    public void deduct(String ingredient, int quantity) {
-        int current = inventory.getOrDefault(ingredient, 0);
-        inventory.put(ingredient, Math.max(0, current - quantity));
-        save();
-    }
-
-    public void print() {
-        System.out.println("\n=== TON KHO NGUYEN LIEU ===");
-        System.out.println("Nguyen lieu     : So luong");
-        System.out.println("-----------------------------");
-        for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
-            System.out.printf("%-15s : %d%n", entry.getKey(), entry.getValue());
-        }
-        System.out.println("=============================");
-    }
-
+    // =====================================================
+    // RESET INVENTORY
+    // =====================================================
     public void reset() {
-        inventory.clear();
-        initDefault();
-        save();
+
+        stock.clear();
+
+        stock.put("tra", 5000);
+
+        stock.put("sua", 5000);
+
+        stock.put("duong", 3000);
+
+        stock.put("da", 5000);
+
+        stock.put("tran chau", 2000);
+
+        stock.put("thach", 2000);
+
+        stock.put("pudding", 1500);
+
+        stock.put("cheese", 1500);
+    }
+
+    // =====================================================
+    // PRINT CONSOLE
+    // =====================================================
+    public void print() {
+
+        System.out.println(
+                "\n=== KHO NGUYÊN LIỆU ==="
+        );
+
+        for (String name : stock.keySet()) {
+
+            System.out.println(
+                    name.toUpperCase()
+                    + " : "
+                    + stock.get(name)
+            );
+        }
+    }
+
+    // =====================================================
+    // GET SINGLE INGREDIENT
+    // =====================================================
+    public int getQuantity(String ingredient) {
+
+        ingredient = ingredient.toLowerCase();
+
+        return stock.getOrDefault(
+                ingredient,
+                0
+        );
     }
 }

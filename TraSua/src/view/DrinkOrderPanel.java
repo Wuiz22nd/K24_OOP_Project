@@ -3,7 +3,7 @@ package view;
 import model.Bill;
 import model.BillItem;
 import model.BillStorage;
-import model.IngredientStock;
+import repository.InventoryRepository;
 import service.BillIdGenerator;
 
 import javax.swing.*;
@@ -183,13 +183,13 @@ public class DrinkOrderPanel extends JPanel {
 
             if (!selectedToppings.isEmpty()) {
 
-                toppingText =
-                        " + "
+                toppingText
+                        = " + "
                         + String.join(", ", selectedToppings);
             }
 
-            String fullName =
-                    selectedDrink
+            String fullName
+                    = selectedDrink
                     + " + " + selectedSize
                     + " + " + selectedSugar
                     + " + " + selectedIce
@@ -260,52 +260,52 @@ public class DrinkOrderPanel extends JPanel {
 
             for (int i = 0; i < tableModel.getRowCount(); i++) {
 
-                String name =
-                        tableModel.getValueAt(i, 1).toString();
+                String name
+                        = tableModel.getValueAt(i, 1).toString();
 
-                int quantity =
-                        Integer.parseInt(
+                int quantity
+                        = Integer.parseInt(
                                 tableModel.getValueAt(i, 4).toString()
                         );
 
-                String priceText =
-                        tableModel.getValueAt(i, 2)
+                String priceText
+                        = tableModel.getValueAt(i, 2)
                                 .toString()
                                 .replace(" VND", "");
 
                 int price = Integer.parseInt(priceText);
 
-                BillItem item =
-                        new BillItem(name, quantity, price);
+                BillItem item
+                        = new BillItem(name, quantity, price);
 
                 bill.addItem(item);
 
                 // ======================
                 // USE INGREDIENT
                 // ======================
-                IngredientStock.useIngredient(
+                InventoryRepository.useIngredient(
                         "tra",
                         200 * quantity
                 );
 
-                IngredientStock.useIngredient(
+                InventoryRepository.useIngredient(
                         "sua",
                         150 * quantity
                 );
 
-                IngredientStock.useIngredient(
+                InventoryRepository.useIngredient(
                         "duong",
                         50 * quantity
                 );
 
-                IngredientStock.useIngredient(
+                InventoryRepository.useIngredient(
                         "da",
                         100 * quantity
                 );
 
                 if (name.contains("Trân châu")) {
 
-                    IngredientStock.useIngredient(
+                    InventoryRepository.useIngredient(
                             "tran chau",
                             30 * quantity
                     );
@@ -313,7 +313,7 @@ public class DrinkOrderPanel extends JPanel {
 
                 if (name.contains("Thạch")) {
 
-                    IngredientStock.useIngredient(
+                    InventoryRepository.useIngredient(
                             "thach",
                             30 * quantity
                     );
@@ -321,7 +321,7 @@ public class DrinkOrderPanel extends JPanel {
 
                 if (name.contains("Pudding")) {
 
-                    IngredientStock.useIngredient(
+                    InventoryRepository.useIngredient(
                             "pudding",
                             30 * quantity
                     );
@@ -329,39 +329,42 @@ public class DrinkOrderPanel extends JPanel {
 
                 if (name.contains("Kem cheese")) {
 
-                    IngredientStock.useIngredient(
-                            "cheese",
-                            30 * quantity
-                    );
-                }
-            }
+    InventoryRepository.useIngredient(
+            "cheese",
+            30 * quantity
+    );
+}
 
-            // SAVE BILL
-            BillStorage.saveBill(bill);
+} // đóng for
 
-            // SHOW RECEIPT
-            new ReceiptFrame(bill);
+// SAVE BILL
+BillStorage.saveBill(bill);
 
-            // CLEAR TABLE
-            tableModel.setRowCount(0);
-        });
+// SHOW RECEIPT
+new ReceiptFrame(bill);
 
-        rightButtons.add(cancelBtn);
-        rightButtons.add(removeBtn);
-        rightButtons.add(addBtn);
-        rightButtons.add(paymentBtn);
+// CLEAR TABLE
+tableModel.setRowCount(0);
 
-        bottomPanel.add(leftMenu, BorderLayout.WEST);
-        bottomPanel.add(centerPanel, BorderLayout.CENTER);
-        bottomPanel.add(rightButtons, BorderLayout.EAST);
+}); // đóng action listener
 
-        add(bottomPanel, BorderLayout.CENTER);
-    }
+rightButtons.add(cancelBtn);
+rightButtons.add(removeBtn);
+rightButtons.add(addBtn);
+rightButtons.add(paymentBtn);
 
-    // ==================================================
-    // DRINK MENU
-    // ==================================================
-    private void showDrinkMenu() {
+bottomPanel.add(leftMenu, BorderLayout.WEST);
+bottomPanel.add(centerPanel, BorderLayout.CENTER);
+bottomPanel.add(rightButtons, BorderLayout.EAST);
+
+add(bottomPanel, BorderLayout.CENTER);
+
+} // đóng createBottomPanel()
+
+// ==================================================
+// DRINK MENU
+// ==================================================
+private void showDrinkMenu() {
 
         centerPanel.removeAll();
 
@@ -656,13 +659,13 @@ public class DrinkOrderPanel extends JPanel {
 
             if (clicked) {
 
-                int quantity =
-                        Integer.parseInt(
+                int quantity
+                        = Integer.parseInt(
                                 tableModel.getValueAt(row, 4).toString()
                         );
 
-                String priceText =
-                        tableModel.getValueAt(row, 2)
+                String priceText
+                        = tableModel.getValueAt(row, 2)
                                 .toString()
                                 .replace(" VND", "");
 
