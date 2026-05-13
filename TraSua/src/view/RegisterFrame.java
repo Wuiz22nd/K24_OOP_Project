@@ -84,6 +84,8 @@ public class RegisterFrame extends JFrame {
         lblUsername.setFont(
                 new Font("Segoe UI", Font.BOLD, 16)
         );
+        
+        lblUsername.setForeground(Color.BLACK);
 
         txtUsername = new JTextField(20);
 
@@ -99,6 +101,8 @@ public class RegisterFrame extends JFrame {
         lblPassword.setFont(
                 new Font("Segoe UI", Font.BOLD, 16)
         );
+        
+        lblPassword.setForeground(Color.BLACK);
 
         txtPassword = new JPasswordField(20);
 
@@ -114,6 +118,8 @@ public class RegisterFrame extends JFrame {
         lblConfirm.setFont(
                 new Font("Segoe UI", Font.BOLD, 16)
         );
+        
+        lblConfirm.setForeground(Color.BLACK);
 
         txtConfirmPassword = new JPasswordField(20);
 
