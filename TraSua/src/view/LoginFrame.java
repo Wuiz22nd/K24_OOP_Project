@@ -126,10 +126,19 @@ public class LoginFrame extends JFrame {
 
         int row = 0;
         panel.add(titleLabel, getGbc(gbc, row++));
-        panel.add(new JLabel("Username"), getGbc(gbc, row++));
-        panel.add(txtUsername, getGbc(gbc, row++));
-        panel.add(new JLabel("Password"), getGbc(gbc, row++));
-        panel.add(txtPassword, getGbc(gbc, row++));
+        JLabel userLabel = new JLabel("Username");
+userLabel.setForeground(Color.BLACK);
+userLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+JLabel passLabel = new JLabel("Password");
+passLabel.setForeground(Color.BLACK);
+passLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+panel.add(userLabel, getGbc(gbc, row++));
+panel.add(txtUsername, getGbc(gbc, row++));
+
+panel.add(passLabel, getGbc(gbc, row++));
+panel.add(txtPassword, getGbc(gbc, row++));
         panel.add(btnLogin, getGbc(gbc, row++));
         panel.add(btnRegister, getGbc(gbc, row));
 
