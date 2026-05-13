@@ -231,7 +231,7 @@ public class ReceiptFrame extends JFrame {
                 new Color(0, 140, 140)
         );
 
-        btn.setForeground(Color.WHITE);
+        btn.setForeground(Color.BLACK);
 
         btn.setPreferredSize(
                 new Dimension(160, 45)
